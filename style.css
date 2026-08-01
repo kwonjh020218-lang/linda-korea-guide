@@ -92,6 +92,11 @@ body {
 }
 .chip.active { background: var(--matcha-soft); border-color: var(--matcha); color: #fff; font-weight: 600; }
 
+/* cuisine sub-row */
+.chips.sub { padding-top: 0.15rem; align-items: center; }
+.chips.sub[hidden] { display: none; }
+.sub-label { flex: 0 0 auto; font-size: 0.8rem; color: var(--muted); margin-right: 0.15rem; }
+
 /* ===== Toggles ===== */
 .toggles {
   display: flex;

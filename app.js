@@ -1,24 +1,51 @@
 // ===== Linda's Korea Guide — render + filters =====
 
-const CATEGORIES = [
-  { key: "matcha",   emoji: "🍵", label: "Matcha" },
-  { key: "sushi",    emoji: "🍣", label: "Sushi" },
-  { key: "japanese", emoji: "🍜", label: "Japanese" },
-  { key: "chinese",  emoji: "🥢", label: "Chinese" },
-  { key: "korean",   emoji: "🍲", label: "Korean" },
-  { key: "italian",  emoji: "🍝", label: "Italian" },
-  { key: "dessert",  emoji: "🍰", label: "Dessert" },
-  { key: "cafe",     emoji: "☕", label: "Cafe" },
-  { key: "photo",    emoji: "📸", label: "Photo" },
-  { key: "landmark", emoji: "🏛️", label: "Landmark" },
+// Primary categories (top chip row)
+const PRIMARY = [
+  { key: "matcha",      emoji: "🍵", label: "Matcha" },
+  { key: "cafedessert", emoji: "🍰", label: "Cafe & Dessert" },
+  { key: "restaurant",  emoji: "🍽️", label: "Restaurant" },
+  { key: "landmark",    emoji: "🏛️", label: "Landmark" },
+  { key: "photo",       emoji: "📸", label: "Photo" },
+  { key: "shop",        emoji: "🛍️", label: "Shop" },
+  { key: "fashion",     emoji: "👕", label: "Fashion & Vintage" },
 ];
-const EMOJI = Object.fromEntries(CATEGORIES.map(c => [c.key, c.emoji]));
-const FOOD = new Set(["sushi", "japanese", "chinese", "korean", "italian"]);
 
-// Paste My Maps embed URLs here to show an overview map per city (see README). Leave "" to hide.
+// Cuisine sub-filter (shown only when Restaurant is active)
+const CUISINES = [
+  { key: "korean",   emoji: "🍲", label: "Korean" },
+  { key: "japanese", emoji: "🍣", label: "Japanese" },
+  { key: "chinese",  emoji: "🥢", label: "Chinese" },
+  { key: "western",  emoji: "🍝", label: "Western" },
+];
+
+// data.category -> primary group
+const GROUP_OF = {
+  matcha: "matcha",
+  dessert: "cafedessert", cafe: "cafedessert",
+  sushi: "restaurant", japanese: "restaurant", chinese: "restaurant",
+  korean: "restaurant", italian: "restaurant",
+  landmark: "landmark", photo: "photo", shop: "shop", fashion: "fashion",
+};
+// cuisine bucket -> which data.cuisine values belong to it
+const CUISINE_MATCH = {
+  korean:   c => c === "korean",
+  japanese: c => c === "japanese",
+  chinese:  c => c === "chinese",
+  western:  c => c === "italian",
+};
+
+// per-card emoji (fine-grained by data.category)
+const EMOJI = {
+  matcha: "🍵", dessert: "🍰", cafe: "☕", sushi: "🍣", japanese: "🍜",
+  chinese: "🥢", korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸",
+  shop: "🛍️", fashion: "👕",
+};
+
+// Paste My Maps embed URLs here to show an overview map per city (see README). "" = hidden.
 const CITY_MAP = { seoul: "", busan: "" };
 
-const state = { city: "seoul", cats: new Set(), top: false, pork: false, q: "" };
+const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "" };
 
 // gyeongju places belong to the Busan tab
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
@@ -34,7 +61,12 @@ function mapsUrl(p) {
 
 function matches(p) {
   if (!inCity(p)) return false;
-  if (state.cats.size && !state.cats.has(p.category)) return false;
+  const group = GROUP_OF[p.category] || p.category;
+  if (state.cats.size && !state.cats.has(group)) return false;
+  if (state.cuisines.size) {
+    if (group !== "restaurant") return false;
+    if (![...state.cuisines].some(k => CUISINE_MATCH[k](p.cuisine))) return false;
+  }
   if (state.top && !p.must_try) return false;
   if (state.pork && p.pork_lamb_free === false) return false;
   if (state.q) {
@@ -45,18 +77,16 @@ function matches(p) {
 }
 
 function cardHTML(p) {
-  const isFood = FOOD.has(p.category);
-
   const tags = [];
-  if (isFood && p.spice > 0) {
+  if (p.spice > 0) {
     const hot = p.spice === 3 ? " hot" : "";
     tags.push(`<span class="tag spice${hot}">${"🌶️".repeat(p.spice)}${p.spice === 3 ? " very spicy!" : ""}</span>`);
   }
-  if (isFood && p.pork_lamb_free === true) tags.push(`<span class="tag good">No pork/lamb ✓</span>`);
-  if (isFood && p.pork_lamb_free === false) tags.push(`<span class="tag amber">⚠ contains pork/lamb</span>`);
+  if (p.pork_lamb_free === true)  tags.push(`<span class="tag good">No pork/lamb ✓</span>`);
+  if (p.pork_lamb_free === false) tags.push(`<span class="tag amber">⚠ contains pork/lamb</span>`);
   if (p.photo_spot) tags.push(`<span class="tag photo">📸 Photo spot</span>`);
   if (p.station) tags.push(`<span class="tag info">🚇 ${p.station}</span>`);
-  if (p.hours) tags.push(`<span class="tag info">🕑 ${p.hours}</span>`);
+  if (p.hours)   tags.push(`<span class="tag info">🕑 ${p.hours}</span>`);
 
   const ig = p.instagram
     ? `<a class="btn secondary" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener">Instagram</a>`
@@ -90,44 +120,53 @@ function render() {
     ? list.map(cardHTML).join("")
     : `<div class="empty">No spots match these filters yet.<br />Try clearing a filter. 🍵</div>`;
 
-  // overview map
   const wrap = document.getElementById("map-wrap");
   const src = CITY_MAP[state.city];
-  if (src) {
-    document.getElementById("overview-map").src = src;
-    wrap.hidden = false;
-  } else {
-    wrap.hidden = true;
-  }
+  if (src) { document.getElementById("overview-map").src = src; wrap.hidden = false; }
+  else { wrap.hidden = true; }
+}
+
+function syncChips(el, isActive) {
+  el.querySelectorAll(".chip").forEach(c => {
+    const k = c.dataset.cat;
+    c.classList.toggle("active", k === "" ? isActive(null) : isActive(k));
+  });
 }
 
 function buildChips() {
   const el = document.getElementById("category-chips");
-  const all = `<button class="chip active" data-cat="">All</button>`;
-  el.innerHTML = all + CATEGORIES.map(c =>
-    `<button class="chip" data-cat="${c.key}">${c.emoji} ${c.label}</button>`
-  ).join("");
+  el.innerHTML = `<button class="chip active" data-cat="">All</button>` +
+    PRIMARY.map(c => `<button class="chip" data-cat="${c.key}">${c.emoji} ${c.label}</button>`).join("");
+
+  const sub = document.getElementById("cuisine-chips");
+  sub.innerHTML = `<span class="sub-label">Cuisine:</span>` +
+    CUISINES.map(c => `<button class="chip" data-cat="${c.key}">${c.emoji} ${c.label}</button>`).join("");
 
   el.addEventListener("click", e => {
-    const btn = e.target.closest(".chip");
-    if (!btn) return;
+    const btn = e.target.closest(".chip"); if (!btn) return;
     const cat = btn.dataset.cat;
-    if (cat === "") { state.cats.clear(); }
-    else if (state.cats.has(cat)) { state.cats.delete(cat); }
-    else { state.cats.add(cat); }
-    // sync active classes
-    el.querySelectorAll(".chip").forEach(c => {
-      const k = c.dataset.cat;
-      c.classList.toggle("active", k === "" ? state.cats.size === 0 : state.cats.has(k));
-    });
+    if (cat === "") state.cats.clear();
+    else if (state.cats.has(cat)) state.cats.delete(cat);
+    else state.cats.add(cat);
+    if (!state.cats.has("restaurant")) state.cuisines.clear();
+    sub.hidden = !state.cats.has("restaurant");
+    syncChips(el, k => k === null ? state.cats.size === 0 : state.cats.has(k));
+    syncChips(sub, k => state.cuisines.has(k));
+    render();
+  });
+
+  sub.addEventListener("click", e => {
+    const btn = e.target.closest(".chip"); if (!btn) return;
+    const k = btn.dataset.cat;
+    if (state.cuisines.has(k)) state.cuisines.delete(k); else state.cuisines.add(k);
+    syncChips(sub, key => state.cuisines.has(key));
     render();
   });
 }
 
 function wireControls() {
   document.getElementById("city-tabs").addEventListener("click", e => {
-    const btn = e.target.closest(".tab");
-    if (!btn) return;
+    const btn = e.target.closest(".tab"); if (!btn) return;
     state.city = btn.dataset.city;
     document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === btn));
     render();
