@@ -34,9 +34,9 @@ const PLACES = [
     must_try: true
   },
   {
-    id: "cortz-yongsan",
-    name: "Cortz",
-    name_kr: "코르츠",
+    id: "oats-coffee-yongsan",
+    name: "Oats Coffee",
+    name_kr: "오츠커피 용산점",
     city: "seoul",
     area: "Yongsan",
     category: "matcha",
@@ -46,12 +46,12 @@ const PLACES = [
     spice: 0,
     pork_lamb_free: null,
     photo_spot: false,
-    lat: null,               // TODO verify: look up exact lat/lng/place_id
-    lng: null,
+    lat: 37.5404131,
+    lng: 126.9677587,
     place_id: null,
-    instagram: null,         // TODO verify handle
+    instagram: null,
     hours: null,
-    station: null,
+    station: "Yongsan area",
     price: "₩₩",
     must_try: true
   },
