@@ -51,9 +51,10 @@ const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false,
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
 
 function mapsUrl(p) {
-  const q = (p.lat != null && p.lng != null)
-    ? `${p.lat},${p.lng}`
-    : encodeURIComponent([p.name, p.name_kr, p.area].filter(Boolean).join(" "));
+  let q;
+  if (p.lat != null && p.lng != null) q = `${p.lat},${p.lng}`;
+  else if (p.address) q = encodeURIComponent(`${p.name_kr || p.name} ${p.address}`);
+  else q = encodeURIComponent([p.name, p.name_kr, p.area].filter(Boolean).join(" "));
   let url = `https://www.google.com/maps/search/?api=1&query=${q}`;
   if (p.place_id) url += `&query_place_id=${p.place_id}`;
   return url;
