@@ -81,28 +81,6 @@ const PLACES = [
     must_try: false
   },
   {
-    id: "unforget-seongsu",
-    name: "Unforget",
-    name_kr: "언포겟",
-    city: "seoul",
-    area: "Seongsu",
-    category: "matcha",
-    cuisine: null,
-    signature: "Matcha macarons",
-    blurb: "Harper's Bazaar pick. 3rd-floor dessert cafe overlooking the subway line — peak Seongsu aesthetic.",
-    spice: 0,
-    pork_lamb_free: null,
-    photo_spot: true,
-    lat: null,               // TODO verify coords + place_id
-    lng: null,
-    place_id: null,
-    instagram: null,
-    hours: null,
-    station: "Seongsu Stn (Line 2)",
-    price: "₩₩",
-    must_try: false
-  },
-  {
     id: "cafe-tilde-namyeong",
     name: "Cafe Tilde",
     name_kr: "틸데",
