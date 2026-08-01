@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linda's Korea Guide 🍵 — Map</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="map-page">
+  <header id="app-header">
+    <div class="head-row">
+      <h1>Linda's Korea Guide 🍵</h1>
+      <a class="view-toggle" href="index.html">📋 List</a>
+    </div>
+  </header>
+
+  <nav class="tabs" id="city-tabs">
+    <button class="tab active" data-city="seoul">Seoul</button>
+    <button class="tab" data-city="busan">Busan</button>
+  </nav>
+
+  <div class="chips" id="category-chips"><!-- filled by map.js --></div>
+
+  <div id="map"></div>
+  <button type="button" id="locate-btn" class="locate-fab" title="Find me">📍</button>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="data.js"></script>
+  <script src="coords.js"></script>
+  <script src="map.js"></script>
+</body>
+</html>
