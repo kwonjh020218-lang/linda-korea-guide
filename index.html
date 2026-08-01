@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linda's Korea Guide 🍵</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header id="app-header">
+    <h1>Linda's Korea Guide 🍵</h1>
+    <p class="subtitle">Seoul · Busan · made with love</p>
+  </header>
+
+  <div class="note">
+    Hi Linda! 👋 Here are my favorite spots, picked just for you 🍵<br />
+    Save this page and use it offline. Tap <b>Open in Google Maps</b> on any card for one-tap directions.
+  </div>
+
+  <!-- City tabs -->
+  <nav class="tabs" id="city-tabs">
+    <button class="tab active" data-city="seoul">Seoul</button>
+    <button class="tab" data-city="busan">Busan</button>
+    <!-- TODO: <button class="tab" data-city="japan">Japan</button> -->
+  </nav>
+
+  <!-- Category chips -->
+  <div class="chips" id="category-chips"><!-- filled by app.js --></div>
+
+  <!-- Toggles -->
+  <div class="toggles">
+    <label><input type="checkbox" id="toggle-top" /> ⭐ Top Picks only</label>
+    <label><input type="checkbox" id="toggle-pork" /> 🚫🥓 No pork/lamb only</label>
+    <input type="search" id="search" placeholder="Search name or area…" />
+  </div>
+
+  <!-- Overview map: paste a My Maps embed URL into the iframe src below to enable -->
+  <!-- TODO: generate a Google My Maps for each city, paste its embed URL here (see README) -->
+  <div class="map-wrap" id="map-wrap" hidden>
+    <iframe id="overview-map" title="Overview map" src="" loading="lazy"></iframe>
+  </div>
+
+  <main id="cards"><!-- filled by app.js --></main>
+
+  <footer class="foot">Made for Linda 🍵 · Enjoy Korea</footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
