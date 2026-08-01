@@ -45,7 +45,20 @@ const EMOJI = {
 // Paste My Maps embed URLs here to show an overview map per city (see README). "" = hidden.
 const CITY_MAP = { seoul: "", busan: "" };
 
-const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "" };
+const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null };
+
+// best-known coordinate for a place (exact from data, else geocoded from coords.js) — for distance only
+function coordOf(p) {
+  if (p.lat != null && p.lng != null) return { lat: p.lat, lng: p.lng };
+  const c = (typeof COORDS !== "undefined") && COORDS[p.id];
+  return c ? { lat: c.lat, lng: c.lng } : null;
+}
+function haversineKm(a, b) {
+  const R = 6371, toRad = x => x * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
 
 // gyeongju places belong to the Busan tab
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
@@ -77,8 +90,12 @@ function matches(p) {
   return true;
 }
 
-function cardHTML(p) {
+function cardHTML(p, dist) {
   const tags = [];
+  if (dist != null && isFinite(dist)) {
+    const label = dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km";
+    tags.push(`<span class="tag near">📍 ${label}</span>`);
+  }
   if (p.spice > 0) {
     const hot = p.spice === 3 ? " hot" : "";
     tags.push(`<span class="tag spice${hot}">${"🌶️".repeat(p.spice)}${p.spice === 3 ? " very spicy!" : ""}</span>`);
@@ -115,11 +132,18 @@ function cardHTML(p) {
 }
 
 function render() {
-  const list = PLACES.filter(matches);
   const el = document.getElementById("cards");
-  el.innerHTML = list.length
-    ? list.map(cardHTML).join("")
+  let items = PLACES.filter(matches).map(p => ({ p, d: null }));
+  if (state.near) {
+    items = items
+      .map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; })
+      .sort((a, b) => a.d - b.d);
+  }
+  el.innerHTML = items.length
+    ? items.map(x => cardHTML(x.p, x.d)).join("")
     : `<div class="empty">No spots match these filters yet.<br />Try clearing a filter. 🍵</div>`;
+
+  document.getElementById("near-note").hidden = !state.near;
 
   const wrap = document.getElementById("map-wrap");
   const src = CITY_MAP[state.city];
@@ -175,6 +199,18 @@ function wireControls() {
   document.getElementById("toggle-top").addEventListener("change", e => { state.top = e.target.checked; render(); });
   document.getElementById("toggle-pork").addEventListener("change", e => { state.pork = e.target.checked; render(); });
   document.getElementById("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
+
+  const nearBtn = document.getElementById("toggle-near");
+  nearBtn.addEventListener("click", () => {
+    if (state.near) { state.near = null; nearBtn.classList.remove("active"); nearBtn.textContent = "📍 Near me"; render(); return; }
+    if (!navigator.geolocation) { alert("Location isn't available on this device."); return; }
+    nearBtn.textContent = "📍 Locating…";
+    navigator.geolocation.getCurrentPosition(
+      pos => { state.near = { lat: pos.coords.latitude, lng: pos.coords.longitude }; nearBtn.classList.add("active"); nearBtn.textContent = "📍 Near me ✓"; render(); },
+      () => { nearBtn.textContent = "📍 Near me"; alert("Couldn't get your location — please allow location access in your browser."); },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
 }
 
 buildChips();

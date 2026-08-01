@@ -36,10 +36,12 @@
 
   <!-- Toggles -->
   <div class="toggles">
+    <button type="button" id="toggle-near" class="near-btn">📍 Near me</button>
     <label><input type="checkbox" id="toggle-top" /> ⭐ Top Picks only</label>
     <label><input type="checkbox" id="toggle-pork" /> 🚫🥓 No pork/lamb only</label>
     <input type="search" id="search" placeholder="Search name or area…" />
   </div>
+  <div class="near-note" id="near-note" hidden>📍 Sorted by how close each spot is to you (straight-line distance).</div>
 
   <!-- Overview map: paste a My Maps embed URL into the iframe src below to enable -->
   <!-- TODO: generate a Google My Maps for each city, paste its embed URL here (see README) -->
@@ -52,6 +54,7 @@
   <footer class="foot">Made for Linda 🍵 · Enjoy Korea</footer>
 
   <script src="data.js"></script>
+  <script src="coords.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

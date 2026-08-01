@@ -108,6 +108,27 @@ body {
   color: var(--muted);
 }
 .toggles label { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+.near-btn {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--matcha-soft);
+  background: var(--card);
+  color: var(--matcha);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.near-btn.active { background: var(--matcha); color: var(--cream); border-color: var(--matcha); }
+.near-note {
+  max-width: 640px;
+  margin: 0.45rem auto 0;
+  width: calc(100% - 2rem);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.near-note[hidden] { display: none; }
+.tag.near { background: #e7efe0; color: var(--matcha); border-color: #cfe0bd; font-weight: 700; }
+
 .toggles input[type="search"] {
   flex: 1 1 160px;
   padding: 0.5rem 0.7rem;
