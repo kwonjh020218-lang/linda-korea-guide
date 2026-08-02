@@ -17,6 +17,7 @@ const CUISINES = [
   { key: "japanese", emoji: "🍣", label: "Japanese" },
   { key: "chinese",  emoji: "🥢", label: "Chinese" },
   { key: "western",  emoji: "🍝", label: "Western" },
+  { key: "global",   emoji: "🌍", label: "Global" },
 ];
 
 // data.category -> primary group
@@ -24,7 +25,9 @@ const GROUP_OF = {
   matcha: "matcha",
   dessert: "cafedessert", cafe: "cafedessert",
   sushi: "restaurant", japanese: "restaurant", chinese: "restaurant",
-  korean: "restaurant", italian: "restaurant",
+  korean: "restaurant", italian: "restaurant", ramen: "restaurant",
+  steak: "restaurant", burger: "restaurant", brunch: "restaurant",
+  mexican: "restaurant", thai: "restaurant", vietnamese: "restaurant", indian: "restaurant",
   landmark: "landmark", photo: "photo", shop: "shop", fashion: "fashion",
 };
 // cuisine bucket -> which data.cuisine values belong to it
@@ -32,14 +35,16 @@ const CUISINE_MATCH = {
   korean:   c => c === "korean",
   japanese: c => c === "japanese",
   chinese:  c => c === "chinese",
-  western:  c => c === "italian",
+  western:  c => c === "italian" || c === "western",
+  global:   c => c === "global",
 };
 
 // per-card emoji (fine-grained by data.category)
 const EMOJI = {
   matcha: "🍵", dessert: "🍰", cafe: "☕", sushi: "🍣", japanese: "🍜",
   chinese: "🥢", korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸",
-  shop: "🛍️", fashion: "👕",
+  shop: "🛍️", fashion: "👕", ramen: "🍜", steak: "🥩", burger: "🍔",
+  brunch: "🥐", mexican: "🌮", thai: "🥘", vietnamese: "🍜", indian: "🍛",
 };
 
 // Paste My Maps embed URLs here to show an overview map per city (see README). "" = hidden.
