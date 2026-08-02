@@ -6,7 +6,6 @@ const PRIMARY = [
   { key: "cafedessert", emoji: "🍰", label: "Cafe & Dessert" },
   { key: "restaurant",  emoji: "🍽️", label: "Restaurant" },
   { key: "landmark",    emoji: "🏛️", label: "Landmark" },
-  { key: "photo",       emoji: "📸", label: "Photo" },
   { key: "shop",        emoji: "🛍️", label: "Shop" },
   { key: "fashion",     emoji: "👕", label: "Fashion & Vintage" },
 ];
