@@ -185,6 +185,11 @@ footer { text-align: center; color: var(--ink-soft); font-family: var(--f-displa
 .stat b { display: block; font-family: var(--f-display); font-size: var(--t-xl); color: var(--matcha-ink); line-height: 1.1; }
 .stat span { font-size: var(--t-xs); color: var(--ink-soft); }
 .trip-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s5); box-shadow: var(--shadow); }
+.plan-hint { margin: var(--s2) 0 var(--s3); font-size: var(--t-xs); color: var(--ink-soft); }
+.plan-city { font-family: var(--f-display); font-weight: 600; font-size: var(--t-lg); margin: var(--s5) 0 var(--s2); letter-spacing: -0.01em; }
+.plan-area { display: flex; align-items: center; justify-content: space-between; margin: var(--s4) 0 var(--s2); padding-bottom: var(--s2); border-bottom: 0.5px solid var(--hair); }
+.plan-area__name { font-weight: 600; font-size: var(--t-base); letter-spacing: -0.01em; }
+.plan-area__n { font-size: var(--t-xs); font-weight: 700; color: var(--matcha-ink); background: var(--matcha-tint); border-radius: var(--r-pill); padding: 2px var(--s2); min-width: 22px; text-align: center; }
 .savebtn.remove { color: var(--ink-soft); font-size: 0.9rem; }
 .stars { display: flex; align-items: center; gap: 2px; margin-top: var(--s3); }
 .star { width: 34px; height: 34px; border: 0; background: transparent; color: var(--line); font-size: 1.35rem; line-height: 1; }

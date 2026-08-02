@@ -41,6 +41,26 @@ function section(title, ids) {
   if (!ids.length) return "";
   return `<p class="section-label">${title} (${ids.length})</p><div class="list">${ids.map(tripCard).join("")}</div>`;
 }
+// Plan view: group the "want to go" list by city -> neighbourhood so each area reads as a day.
+const CITY_NAME = { seoul: "Seoul", busan: "Busan", gyeongju: "Gyeongju", tokyo: "Tokyo" };
+const CITY_ORDER = ["seoul", "busan", "gyeongju", "tokyo"];
+function planSection(ids) {
+  if (!ids.length) return "";
+  const g = {};
+  ids.forEach(id => { const p = byId[id], a = p.area || "Other"; ((g[p.city] = g[p.city] || {})[a] = g[p.city][a] || []).push(id); });
+  const cities = CITY_ORDER.filter(c => g[c]);
+  const nAreas = cities.reduce((s, c) => s + Object.keys(g[c]).length, 0);
+  let html = `<p class="section-label">⭐ Want to go (${ids.length})</p>`;
+  html += `<p class="plan-hint">${ids.length} spot${ids.length > 1 ? "s" : ""} across ${nAreas} neighbourhood${nAreas > 1 ? "s" : ""} — grouped so each area is an easy day out.</p>`;
+  cities.forEach(c => {
+    if (cities.length > 1) html += `<h3 class="plan-city">${CITY_NAME[c] || c}</h3>`;
+    Object.keys(g[c]).sort().forEach(a => {
+      html += `<div class="plan-area"><span class="plan-area__name">📍 ${a}</span><span class="plan-area__n">${g[c][a].length}</span></div>`;
+      html += `<div class="list">${g[c][a].map(tripCard).join("")}</div>`;
+    });
+  });
+  return html;
+}
 function render() {
   const c = Trip.counts();
   document.getElementById("trip-stats").innerHTML =
@@ -55,7 +75,7 @@ function render() {
     body.innerHTML = `<p class="empty">Nothing saved yet.<br />Tap ♥ (want to go) or ✓ (been here) on any spot in the List. 🍵</p>`;
     return;
   }
-  body.innerHTML = section("⭐ Want to go", want) + section("✓ Visited", been) +
+  body.innerHTML = planSection(want) + section("✓ Visited", been) +
     (want.length + been.length < ids.length ? section("Noted", ids.filter(id => !Trip.status(id))) : "");
 }
 
