@@ -50,35 +50,49 @@ function routeMapsUrl(coords) {
   if (wp) u += `&waypoints=${encodeURIComponent(wp)}`;
   return u;
 }
-// pick up to `max`, favouring a mix of kinds (one per kind first, then fill)
+// pick up to `max`, one per kind round-robin — matcha first (Linda drinks it daily)
+const KIND_PRIORITY = ["matcha", "cafe", "sweets", "food", "sight", "shopping", "vintage"];
 function pickDiverse(places, max) {
   const byKind = {};
   places.forEach(p => { const k = KIND_OF[p.category] || "food"; (byKind[k] = byKind[k] || []).push(p); });
-  const kinds = Object.keys(byKind), out = [];
-  let i = 0;
-  while (out.length < max && out.length < places.length) {
+  const kinds = Object.keys(byKind).sort((a, b) => KIND_PRIORITY.indexOf(a) - KIND_PRIORITY.indexOf(b));
+  const out = [];
+  let i = 0, guard = 0;
+  while (out.length < max && out.length < places.length && guard++ < 300) {
     const k = kinds[i % kinds.length];
     if (byKind[k].length) out.push(byKind[k].shift());
     i++;
-    if (i > kinds.length * max) break;
   }
   return out;
 }
-function coursesFrom(pool) {
-  const areas = {};
-  pool.forEach(p => { const a = p.area || "Other"; (areas[a] = areas[a] || []).push(p); });
-  const courses = [];
-  Object.keys(areas).forEach(a => {
-    if (areas[a].length < 3) return; // need enough for a real day
-    courses.push(Object.assign({ area: a }, routeOrder(pickDiverse(areas[a], 6))));
-  });
-  return courses.sort((x, y) => y.stops.length - x.stops.length);
+function centroid(places) {
+  const cs = places.map(coordOf).filter(Boolean);
+  return { lat: cs.reduce((s, c) => s + c.lat, 0) / cs.length, lng: cs.reduce((s, c) => s + c.lng, 0) / cs.length };
 }
 function buildCourses(city) {
   const inThisCity = PLACES.filter(p => inCity(city)(p) && coordOf(p));
-  // best: courses from the top picks; if a city has too few, fall back to all hand-picked spots there
-  const best = coursesFrom(inThisCity.filter(p => p.must_try));
-  return best.length ? best : coursesFrom(inThisCity);
+  const matchaSpots = inThisCity.filter(p => p.category === "matcha");
+  const byArea = {};
+  inThisCity.forEach(p => { const a = p.area || "Other"; (byArea[a] = byArea[a] || []).push(p); });
+  const make = filterFn => {
+    const courses = [];
+    Object.keys(byArea).forEach(a => {
+      const cand = byArea[a].filter(filterFn);
+      if (cand.length < 3) return; // need enough for a real day
+      let chosen = pickDiverse(cand, 6);
+      // Linda drinks matcha daily — every course gets the nearest good matcha (within ~2.5km), if it lacks one
+      if (!chosen.some(p => p.category === "matcha") && matchaSpots.length) {
+        const cen = centroid(chosen);
+        let best = null, bw = Infinity;
+        matchaSpots.forEach(m => { if (chosen.includes(m)) return; const w = haversineKm(cen, coordOf(m)) - (m.must_try ? 0.25 : 0); if (w < bw) { bw = w; best = m; } });
+        if (best && haversineKm(cen, coordOf(best)) <= 2.5) { if (chosen.length >= 6) chosen = chosen.slice(0, 5); chosen.push(best); }
+      }
+      courses.push(Object.assign({ area: a }, routeOrder(chosen)));
+    });
+    return courses.sort((x, y) => y.stops.length - x.stops.length);
+  };
+  const best = make(p => p.must_try);          // top picks first
+  return best.length ? best : make(() => true); // fall back to all hand-picked spots (e.g. Tokyo)
 }
 function vibe(stops) {
   const seen = [], order = ["matcha", "food", "cafe", "sweets", "sight", "shopping", "vintage"];
