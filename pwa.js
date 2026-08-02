@@ -16,7 +16,7 @@ if ("serviceWorker" in navigator) {
 
   btn.addEventListener("click", async () => {
     if (deferred) { deferred.prompt(); await deferred.userChoice; deferred = null; btn.hidden = true; return; }
-    if (isIOS) { alert("To install on iPhone:\n\n1. Tap the Share button (⬆️ box)\n2. Choose “Add to Home Screen”"); return; }
+    if (isIOS) { alert("On iPhone this only works in Safari:\n\n1. If you're not in Safari, tap “Open in Safari” first\n2. Tap the Share button (⬆️ box at the bottom)\n3. Scroll down and choose “Add to Home Screen”"); return; }
     alert("Open the browser menu (⋮) and choose “Install app” / “Add to Home screen”.");
   });
   window.addEventListener("appinstalled", () => { btn.hidden = true; });
