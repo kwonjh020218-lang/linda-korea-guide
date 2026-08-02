@@ -90,7 +90,7 @@ a { color: inherit; }
 .filters { padding: 0 var(--s5); }
 .section-label { font-size: var(--t-xs); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); margin: var(--s5) 0 var(--s2); }
 .cities { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s1); margin-top: var(--s4); background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--s1); }
-.cities button { min-height: 40px; border: 0; background: transparent; border-radius: var(--r-sm); font-weight: 600; color: var(--ink-soft); font-family: var(--f-display); font-size: var(--t-base); }
+.cities button { min-height: 40px; border: 0; background: transparent; border-radius: var(--r-sm); font-weight: 600; color: var(--ink-soft); font-family: var(--f-body); font-size: var(--t-base); letter-spacing: -0.01em; }
 .cities button[aria-pressed="true"] { background: var(--matcha); color: var(--card); box-shadow: var(--shadow-lift); }
 
 /* tactile press — Apple-style micro-interactions */
@@ -136,7 +136,7 @@ a { color: inherit; }
   margin: calc(-1 * var(--s5)) calc(-1 * var(--s5)) var(--s4); border-radius: var(--r-lg) var(--r-lg) 0 0; background: var(--matcha-tint); }
 .card.has-photo { contain-intrinsic-size: 0 420px; }
 .card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
-.card__name { font-family: var(--f-display); font-weight: 600; font-size: var(--t-lg); line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
+.card__name { font-family: var(--f-body); font-weight: 600; font-size: var(--t-lg); line-height: 1.2; margin: 0; letter-spacing: -0.02em; }
 .card__emoji { margin-right: 6px; }
 .badge-top { flex: none; display: inline-flex; align-items: center; gap: 4px; background: var(--gold-tint); color: var(--gold-ink);
   border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent); border-radius: var(--r-pill); padding: 4px var(--s2); font-size: var(--t-xs); font-weight: 700; white-space: nowrap; }
