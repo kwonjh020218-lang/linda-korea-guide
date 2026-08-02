@@ -200,7 +200,6 @@ function wireControls() {
     render();
   });
   document.getElementById("toggle-top").addEventListener("change", e => { state.top = e.target.checked; render(); });
-  document.getElementById("toggle-pork").addEventListener("change", e => { state.pork = e.target.checked; render(); });
   document.getElementById("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
 
   const nearBtn = document.getElementById("toggle-near");
