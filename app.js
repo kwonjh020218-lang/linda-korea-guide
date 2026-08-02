@@ -58,6 +58,13 @@ function mapsUrl(p) {
   return url;
 }
 const CITY_KR = { seoul: "서울", busan: "부산", gyeongju: "경주" };
+const detOf = p => (typeof DETAILS !== "undefined") && DETAILS[p.id] || null;
+function todayHours(det) {
+  if (!det || !det.h) return null;
+  const line = det.h[(new Date().getDay() + 6) % 7]; // weekdayDescriptions start Monday
+  if (!line) return null;
+  return line.split(": ").slice(1).join(": ").replace(/ /g, "").replace(/\s?–\s?/g, "–");
+}
 const naverUrl = p => {
   // Naver is a Korean service — keep the query all-Korean (name_kr + Korean address, or + city). No English area.
   const q = p.address ? `${p.name_kr || p.name} ${p.address}` : `${p.name_kr || p.name} ${CITY_KR[p.city] || ""}`;
@@ -82,6 +89,9 @@ function matches(p) {
 }
 
 function cardHTML(p, dist) {
+  const det = detOf(p);
+  const photo = det && det.ph;
+  const hrs = todayHours(det) || p.hours;
   const tags = [];
   if (dist != null && isFinite(dist)) {
     const label = dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km";
@@ -92,11 +102,12 @@ function cardHTML(p, dist) {
   if (p.pork_lamb_free === false) tags.push(`<span class="tag tag--warn">⚠ contains pork/lamb</span>`);
   if (p.photo_spot) tags.push(`<span class="tag tag--photo">📸 Photo spot</span>`);
   if (p.station && p.station !== "see map") tags.push(`<span class="tag">🚇 ${p.station}</span>`);
-  if (p.hours) tags.push(`<span class="tag">🕑 ${p.hours}</span>`);
+  if (hrs) tags.push(`<span class="tag${/closed/i.test(hrs) ? " tag--warn" : ""}">🕑 ${hrs}</span>`);
   const st = (typeof Trip !== "undefined") ? Trip.status(p.id) : null;
   const ig = p.instagram ? `<a class="util" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener" title="Instagram">📷</a>` : "";
   return `
-    <article class="card${p.must_try ? " card--top" : ""}" data-id="${p.id}">
+    <article class="card${p.must_try ? " card--top" : ""}${photo ? " has-photo" : ""}" data-id="${p.id}">
+      ${photo ? `<img class="card__photo" loading="lazy" src="${photo}" alt="" />` : ""}
       <div class="card__head">
         <h2 class="card__name"><span class="card__emoji" aria-hidden="true">${EMOJI[p.category] || "📍"}</span>${p.name}</h2>
         <div class="savebtns">

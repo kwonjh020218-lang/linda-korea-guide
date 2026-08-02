@@ -122,6 +122,9 @@ a { color: inherit; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s5); box-shadow: var(--shadow);
   content-visibility: auto; contain-intrinsic-size: 0 260px; }
 .card--top { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); }
+.card__photo { display: block; width: calc(100% + 2 * var(--s5)); height: 168px; object-fit: cover;
+  margin: calc(-1 * var(--s5)) calc(-1 * var(--s5)) var(--s4); border-radius: var(--r-lg) var(--r-lg) 0 0; background: var(--matcha-tint); }
+.card.has-photo { contain-intrinsic-size: 0 420px; }
 .card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
 .card__name { font-family: var(--f-display); font-weight: 600; font-size: var(--t-lg); line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
 .card__emoji { margin-right: 6px; }
