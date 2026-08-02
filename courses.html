@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
-  <title>My Trip ❤️ — Linda's Korea Guide</title>
+  <title>Courses 🧭 — Linda's Korea Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
@@ -17,25 +17,29 @@
   <header class="header">
     <div class="header__row">
       <div class="brand">
-        <h1 class="brand__title">My Trip ❤️</h1>
-        <p class="brand__sub">Saved &amp; visited</p>
+        <h1 class="brand__title">Ready-made courses 🧭</h1>
+        <p class="brand__sub">Best spots, walk in order</p>
       </div>
       <div class="viewtoggle" role="group" aria-label="View mode">
         <a href="index.html" aria-pressed="false">List</a>
         <a href="map.html" aria-pressed="false">Map</a>
-        <a href="courses.html" aria-pressed="false" aria-label="Courses">🧭</a>
-        <button type="button" aria-pressed="true" aria-label="My Trip">❤️</button>
+        <button type="button" aria-pressed="true" aria-label="Courses">🧭</button>
+        <a href="mytrip.html" aria-pressed="false" aria-label="My Trip">❤️</a>
       </div>
     </div>
   </header>
 
   <section class="filters">
-    <div class="trip-stats" id="trip-stats"></div>
+    <div class="cities" id="city-tabs" role="group" aria-label="Choose a city">
+      <button type="button" class="tab" data-city="seoul" aria-pressed="true">Seoul</button>
+      <button type="button" class="tab" data-city="busan" aria-pressed="false">Busan</button>
+      <button type="button" class="tab" data-city="tokyo" aria-pressed="false">Tokyo</button>
+    </div>
   </section>
 
-  <main class="results" id="trip-body"><!-- mytrip.js --></main>
+  <main class="results" id="courses-body"><!-- courses.js --></main>
 
-  <footer>🍵 Your Korea trip</footer>
+  <footer>🍵 Hand-picked day courses</footer>
 </div>
 
 <div id="toast" class="toast" hidden></div>
@@ -43,7 +47,7 @@
 <script src="data.js"></script>
 <script src="coords.js"></script>
 <script src="store.js"></script>
-<script src="mytrip.js"></script>
+<script src="courses.js"></script>
 <script src="pwa.js"></script>
 </body>
 </html>

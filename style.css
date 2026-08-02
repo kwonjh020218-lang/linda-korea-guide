@@ -193,7 +193,16 @@ footer { text-align: center; color: var(--ink-soft); font-family: var(--f-displa
 .plan-area__n { font-size: var(--t-xs); font-weight: 700; color: var(--matcha-ink); background: var(--matcha-tint); border-radius: var(--r-pill); padding: 2px var(--s2); min-width: 22px; text-align: center; }
 .route-btn { display: inline-flex; align-items: center; gap: 4px; font-size: var(--t-xs); font-weight: 600; color: var(--matcha-ink); background: var(--matcha-tint); border-radius: var(--r-pill); padding: 4px var(--s3); text-decoration: none; }
 .route-btn:active { transform: scale(0.95); }
-.plan-step { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-right: 8px; border-radius: 50%; background: var(--matcha); color: var(--card); font-size: var(--t-xs); font-weight: 700; vertical-align: 1px; }
+.plan-step { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-right: 8px; border-radius: 50%; background: var(--matcha); color: var(--card); font-size: var(--t-xs); font-weight: 700; vertical-align: 1px; flex: none; }
+
+/* ready-made courses */
+.course { background: var(--card); border: 0; border-radius: var(--r-lg); padding: var(--s5); box-shadow: var(--shadow-card); }
+.course__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
+.course__title { font-family: var(--f-body); font-weight: 600; font-size: var(--t-lg); margin: 0; letter-spacing: -0.02em; }
+.course__sub { margin: 2px 0 0; font-size: var(--t-xs); color: var(--ink-soft); }
+.course__stops { list-style: none; margin: var(--s4) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.course__stop { display: flex; align-items: center; }
+.course__stopname { font-size: var(--t-sm); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .savebtn.remove { color: var(--ink-soft); font-size: 0.9rem; }
 .stars { display: flex; align-items: center; gap: 2px; margin-top: var(--s3); }
 .star { width: 34px; height: 34px; border: 0; background: transparent; color: var(--line); font-size: 1.35rem; line-height: 1; }
