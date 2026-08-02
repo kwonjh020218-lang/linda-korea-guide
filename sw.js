@@ -1,5 +1,5 @@
 // Simple offline cache for the app shell + data (list page works offline).
-const CACHE = "linda-korea-v1";
+const CACHE = "linda-korea-v2";
 const ASSETS = [
   "./", "index.html", "style.css", "app.js", "data.js", "coords.js",
   "map.html", "map.js", "manifest.webmanifest", "icon.svg",
@@ -12,14 +12,15 @@ self.addEventListener("activate", e => {
     Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
   ).then(() => self.clients.claim()));
 });
+// Network-first: online → always fresh; offline → cached fallback.
 self.addEventListener("fetch", e => {
   const url = new URL(e.request.url);
-  if (e.request.method !== "GET" || url.origin !== location.origin) return; // let map tiles / fonts hit network
+  if (e.request.method !== "GET" || url.origin !== location.origin) return; // map tiles / fonts hit network
   e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request).then(res => {
+    fetch(e.request).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(e.request, copy));
       return res;
-    }).catch(() => caches.match("index.html")))
+    }).catch(() => caches.match(e.request).then(r => r || caches.match("index.html")))
   );
 });

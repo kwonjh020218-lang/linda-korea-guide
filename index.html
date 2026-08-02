@@ -75,9 +75,34 @@
   <footer>🍵 Seoul · Busan · 700+ spots</footer>
 </div>
 
+<button type="button" id="phrase-fab" class="fab-phrase" aria-label="Phrasebook">💬</button>
+
+<div class="sheet" id="phrasebook" hidden>
+  <div class="sheet__panel">
+    <div class="sheet__head">
+      <strong>Phrasebook</strong>
+      <button type="button" id="phrase-close" class="sheet__close" aria-label="Close">✕</button>
+    </div>
+    <p class="sheet__hint">Pick what you need — tap a phrase to show it big (🇰🇷 / 🇯🇵) to staff, with sound 🔊</p>
+    <div class="chiprow" id="phrase-cats"></div>
+    <div class="phrase-list" id="phrase-list"></div>
+  </div>
+</div>
+
+<div class="phrase-big" id="phrase-big" hidden>
+  <button type="button" id="phrase-big-close" class="phrase-big__close" aria-label="Close">✕</button>
+  <div class="phrase-big__inner">
+    <p class="phrase-big__en" id="pb-en"></p>
+    <button type="button" class="pb-line" id="pb-ko-btn"><span class="pb-flag">🇰🇷</span><span class="pb-txt" id="pb-ko"></span><span class="pb-spk">🔊</span></button>
+    <button type="button" class="pb-line" id="pb-ja-btn"><span class="pb-flag">🇯🇵</span><span class="pb-txt" id="pb-ja"></span><span class="pb-spk">🔊</span></button>
+  </div>
+</div>
+
 <script src="data.js"></script>
 <script src="coords.js"></script>
 <script src="app.js"></script>
+<script src="phrases.js"></script>
+<script src="phrasebook.js"></script>
 <script src="pwa.js"></script>
 </body>
 </html>
