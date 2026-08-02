@@ -74,7 +74,7 @@ function matches(p) {
   if (state.top && !p.must_try) return false;
   if (state.pork && p.pork_lamb_free === false) return false;
   if (state.q) {
-    const hay = `${p.name} ${p.name_kr} ${p.area}`.toLowerCase();
+    const hay = `${p.name} ${p.name_kr} ${p.area} ${p.signature} ${p.category} ${p.cuisine || ""}`.toLowerCase();
     if (!hay.includes(state.q.toLowerCase())) return false;
   }
   return true;
