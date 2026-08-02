@@ -5087,7 +5087,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "sinrimchuncheonjip-gurodijiteoljikyeongjeom",
@@ -5110,7 +5110,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "dohuine",
@@ -5271,7 +5271,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "garakgolmasanagujjim",
@@ -5317,7 +5317,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "gangchonsutbuldakgalbi-bonjeom",
@@ -5363,7 +5363,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "darobe",
@@ -5432,7 +5432,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "seusi-jo",
@@ -5501,7 +5501,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "bokalrino",
@@ -5616,7 +5616,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "yeonhaphoetjip",
@@ -5777,7 +5777,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "vanga-dakgalbi-hongdae",
@@ -5892,7 +5892,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "daejangjangihwadeokpija",
@@ -6145,7 +6145,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "jangansamgyetang",
@@ -6237,7 +6237,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "heijyoji",
@@ -6260,7 +6260,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "ppalgan-deungdae-bonjeom",
@@ -6398,7 +6398,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "nyubusanhoetjip",
@@ -6513,7 +6513,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "paipeugeuraundeu-seoulsup",
@@ -6536,7 +6536,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "dauntauneo-anguk",
@@ -6582,7 +6582,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "autbaekseuteikeuhauseu-dongraejeom",
@@ -6651,7 +6651,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "jyotiindo-reseutorang-sinchonjeom",
@@ -6697,7 +6697,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "orenoramen-gangnam",
@@ -6720,7 +6720,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "cgv",
@@ -6743,7 +6743,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "hebiseuteikeu-gangnamyeokjeom",
@@ -6766,7 +6766,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "onjisim-ikseondong-matjip",
@@ -6789,7 +6789,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "sesang-kkeutui-ramen",
@@ -6835,7 +6835,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "kwanandao",
@@ -6927,7 +6927,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "hebiseuteikeu-seongsujeom",
@@ -6950,7 +6950,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "krappom",
@@ -7065,7 +7065,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "saengeogeoseutin-busanilruahoteljeom",
@@ -7157,7 +7157,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "janjan-jonggakjeom",
@@ -7180,7 +7180,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "kut-seoul",
@@ -7203,7 +7203,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "delriindia",
@@ -7249,7 +7249,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "doma-yujeuramen-angukjeom",
@@ -7295,7 +7295,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "raiok-beteunam-ssalguksu-bonjeom",
@@ -7341,7 +7341,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "helroindia",
@@ -7364,7 +7364,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "helroindia-hongdaejeom",
@@ -7387,7 +7387,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "orot",
@@ -7433,7 +7433,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "sugar-skull-2",
@@ -7502,7 +7502,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "xolotaco-mexicano-itaewon-pub-restaurant",
@@ -7525,7 +7525,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "beogeoinnyuyok",
@@ -7571,7 +7571,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "rilbeogeo-deohyeondaeseoul",
@@ -7594,7 +7594,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "machoseuteikeu-busanjikyeongjeom",
@@ -7617,7 +7617,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "deotakobuseu-sinyongsanjeom",
@@ -7640,7 +7640,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "noi",
@@ -7663,7 +7663,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "nireubana",
@@ -7709,7 +7709,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "meksikosikdang2hojeom-meksikodaineo",
@@ -7732,7 +7732,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "deilripikseu-euljiro",
@@ -7755,7 +7755,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "halriseuko",
@@ -7778,7 +7778,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "baengeondiseuteikeu",
@@ -7824,7 +7824,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "deotakobuseu-euljirojeom",
@@ -7847,7 +7847,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "yeti-indo-reseutorang",
@@ -7893,7 +7893,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "dainingrum",
@@ -7985,7 +7985,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "daenseudaenseudaenseu-seoulyeokjeom",
@@ -8008,7 +8008,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "ribon",
@@ -8031,7 +8031,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "kape-reusangseu",
@@ -8054,7 +8054,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "soinana",
@@ -8077,7 +8077,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "takodat",
@@ -8100,7 +8100,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "beogeosyap-jeonpo",
@@ -8146,7 +8146,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "pongtai",
@@ -8169,7 +8169,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "yakitori-gou-bonjeom",
@@ -8215,7 +8215,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "orot-robata",
@@ -8238,7 +8238,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "live",
@@ -8261,7 +8261,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "yeonnamdong-hipo-beureonchihauseu",
@@ -8537,7 +8537,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "songhwasansidosakmyeon",
@@ -8606,7 +8606,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "nonhyeonsonkalguksu",
@@ -8813,7 +8813,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "songweonmulhoe",
@@ -8998,7 +8998,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "Free",
-    must_try: false
+    must_try: true
   },
   {
     id: "insadong-munhwaui-geori",
@@ -9067,7 +9067,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "Free",
-    must_try: false
+    must_try: true
   },
   {
     id: "seoulsupgongweon",
@@ -9090,7 +9090,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "Free",
-    must_try: false
+    must_try: true
   },
   {
     id: "namsangolhanokmaeul",
@@ -9113,7 +9113,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "Free",
-    must_try: false
+    must_try: true
   },
   {
     id: "haneulgongweon",
@@ -10654,7 +10654,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "gamcheon-patch",
@@ -10677,7 +10677,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "etcseoul",
@@ -10838,7 +10838,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "sappun-garosugil-peulraegeusipseutoeo",
@@ -10861,7 +10861,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "hongdae-vintage-b1",
@@ -10884,7 +10884,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "eitsekeonjeu-busangwangbokjeom",
@@ -10907,7 +10907,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "gentle-monster-seoul-sinsa",
@@ -11253,7 +11253,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "eitsekeonjeu-garosugiljeom",
@@ -11299,7 +11299,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "ella-boutique",
@@ -11437,7 +11437,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "bibamuyeok-eulji-deondeondongdaemunjeom",
@@ -11575,7 +11575,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "ddpdijainseutoeo",
@@ -11645,7 +11645,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "Free",
-    must_try: false
+    must_try: true
   },
   {
     id: "gaelreoriabaekhwa",
@@ -12106,7 +12106,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "enuff-hannam-ineopeu-hannam",
@@ -12198,7 +12198,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "yussopul-yeonnamjeom",
@@ -12221,7 +12221,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "note-hongdae-perfume-workshop-hongdaehyangsugongbang-datnoteu",
@@ -12244,7 +12244,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "peopyuraunji",
@@ -12267,7 +12267,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "seongsuhyangsugongbang-datnoteu",
@@ -12290,7 +12290,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "peopyuraunji-seongsu",
@@ -12451,7 +12451,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "musinsa-seutoeo-hongdae",
@@ -12589,7 +12589,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
 
   {
@@ -12613,7 +12613,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "raebinyu",
@@ -13027,7 +13027,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "kape-reieodeu-yeonnam",
@@ -13648,7 +13648,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "samcheongbingsu",
@@ -13993,7 +13993,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "giyom-cheongdamjeom",
@@ -14246,7 +14246,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "euljiro-jeokdang",
@@ -14660,7 +14660,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   },
   {
     id: "etji993",
@@ -16202,7 +16202,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: false
+    must_try: true
   }
 
   // ---------- TODO (next passes) ----------
