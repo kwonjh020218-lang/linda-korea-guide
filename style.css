@@ -78,12 +78,6 @@ a { color: inherit; }
 }
 .install-dismiss { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); font-size: 0.75rem; }
 
-/* intro note */
-.note { margin: var(--s4) var(--s5) 0; background: var(--card); border: 1px solid var(--line);
-  border-left: 3px solid var(--pink); border-radius: var(--r-md); padding: var(--s3) var(--s4); }
-.note__hi { font-family: var(--f-display); font-style: italic; font-weight: 500; font-size: var(--t-base); color: var(--pink-ink); margin: 0 0 2px; }
-.note p { margin: 0; font-size: var(--t-xs); color: var(--ink-soft); line-height: 1.5; }
-.note__sign { display: block; margin-top: var(--s2); font-family: var(--f-display); font-style: italic; color: var(--matcha); font-size: var(--t-base); }
 
 /* filters */
 .filters { padding: 0 var(--s5); }
