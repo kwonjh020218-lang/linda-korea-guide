@@ -7985,7 +7985,7 @@ const PLACES = [
     hours: null,
     station: "see map",
     price: "₩₩",
-    must_try: true
+    must_try: false
   },
   {
     id: "daenseudaenseudaenseu-seoulyeokjeom",

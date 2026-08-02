@@ -38,7 +38,7 @@
 
   <section class="note" aria-label="A note for Linda">
     <p class="note__hi">Hi Linda 👋</p>
-    <p>700+ hand-picked spots. 📍 Near me · ⭐ top picks · 💬 phrases. Start with the matcha 🍵</p>
+    <p>1,000+ hand-picked spots across Seoul, Busan &amp; Tokyo. 📍 Near me · 🟢 open now · 💬 phrases. Start with the matcha 🍵</p>
   </section>
 
   <section class="filters" aria-label="Filters">
@@ -58,6 +58,7 @@
     <div class="controls">
       <button type="button" class="btn-outline" id="toggle-near">📍 Near me</button>
       <button type="button" class="btn-outline" id="nearest-matcha">🍵 Nearest matcha</button>
+      <button type="button" class="btn-outline" id="toggle-open">🟢 Open now</button>
       <label class="toggle"><input type="checkbox" id="toggle-top" /><span class="box">✓</span> ⭐ Top Picks only</label>
     </div>
     <div class="search">
@@ -72,7 +73,7 @@
     <div class="list" id="cards"><!-- app.js --></div>
   </main>
 
-  <footer>🍵 Seoul · Busan · 700+ spots</footer>
+  <footer>🍵 Seoul · Busan · Tokyo · 1,000+ spots</footer>
 </div>
 
 <button type="button" id="phrase-fab" class="fab-phrase" aria-label="Phrasebook">💬</button>
@@ -96,6 +97,14 @@
     <p class="phrase-big__en" id="pb-en"></p>
     <button type="button" class="pb-line" id="pb-ko-btn"><span class="pb-flag">🇰🇷</span><span class="pb-txt" id="pb-ko"></span><span class="pb-spk">🔊</span></button>
     <button type="button" class="pb-line" id="pb-ja-btn"><span class="pb-flag">🇯🇵</span><span class="pb-txt" id="pb-ja"></span><span class="pb-spk">🔊</span></button>
+  </div>
+</div>
+
+<div id="hours-pop" class="hours-pop" hidden>
+  <div class="hours-pop__card">
+    <strong id="hours-pop-name"></strong>
+    <div id="hours-pop-body"></div>
+    <button type="button" id="hours-pop-close" class="btn-outline">Close</button>
   </div>
 </div>
 

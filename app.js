@@ -34,7 +34,7 @@ const EMOJI = {
 const PHRASE_CAT = { matcha: 2, cafedessert: 2, restaurant: 1, shop: 4, fashion: 4, landmark: 3 };
 
 const KOREA = new Set(["seoul", "busan", "gyeongju"]);
-const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null, sortNear: false };
+const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, openNow: false, q: "", near: null, sortNear: false };
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
 
 function coordOf(p) {
@@ -59,6 +59,52 @@ function mapsUrl(p) {
 }
 const CITY_KR = { seoul: "서울", busan: "부산", gyeongju: "경주" };
 const detOf = p => (typeof DETAILS !== "undefined") && DETAILS[p.id] || null;
+// ---- "Open now" status from weekdayDescriptions (device-local time; Seoul/Busan/Tokyo all UTC+9) ----
+const DAY3 = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+function parseClock(s) {
+  const m = s.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (m) { let h = (+m[1]) % 12; if (/pm/i.test(m[3])) h += 12; return h * 60 + (+m[2]); }
+  return null; // no unambiguous meridiem -> unparseable (safe fallback to plain string)
+}
+function parseRanges(line) {
+  if (!line) return null;
+  const body = line.slice(line.indexOf(":") + 1).trim();
+  if (/closed/i.test(body)) return [];
+  if (/24\s*hours/i.test(body)) return [[0, 1440]];
+  const out = [];
+  for (const part of body.split(",")) {
+    const seg = part.split(/[–—-]/); if (seg.length < 2) return null;
+    const s = parseClock(seg[0]); let e = parseClock(seg[1]);
+    if (s == null || e == null) return null;
+    if (e <= s) e += 1440; // past midnight
+    out.push([s, e]);
+  }
+  return out.length ? out : null;
+}
+function fmtClock(min) {
+  min = ((min % 1440) + 1440) % 1440;
+  let h = Math.floor(min / 60); const m = min % 60, ap = h < 12 ? "AM" : "PM";
+  h = h % 12; if (h === 0) h = 12;
+  return m ? `${h}:${String(m).padStart(2, "0")} ${ap}` : `${h} ${ap}`;
+}
+function hoursInfo(det) {
+  if (!det || !det.h) return null;
+  const now = new Date(), dayIdx = (now.getDay() + 6) % 7, nowMin = now.getHours() * 60 + now.getMinutes();
+  const today = parseRanges(det.h[dayIdx]);
+  if (today === null) return null; // unparseable -> caller shows plain string
+  const yest = parseRanges(det.h[(dayIdx + 6) % 7]);
+  let closeAt = null;
+  for (const [s, e] of today) if (nowMin >= s && nowMin < e) { closeAt = e; break; }
+  if (closeAt == null && yest) for (const [s, e] of yest) if (e > 1440 && nowMin < e - 1440) { closeAt = e - 1440; break; }
+  if (closeAt != null) {
+    const left = ((closeAt % 1440) - nowMin + 1440) % 1440, soon = left <= 60;
+    return { open: true, soon, text: soon ? `Closes ${fmtClock(closeAt)}` : `Open · till ${fmtClock(closeAt)}` };
+  }
+  for (const [s] of today) if (s > nowMin) return { open: false, text: `Closed · opens ${fmtClock(s)}` };
+  for (let k = 1; k <= 6; k++) { const r = parseRanges(det.h[(dayIdx + k) % 7]); if (r && r.length) return { open: false, text: `Closed · opens ${DAY3[(dayIdx + k) % 7]} ${fmtClock(r[0][0])}` }; }
+  return { open: false, text: "Closed" };
+}
+const isOpenNow = p => { const i = hoursInfo(detOf(p)); return !!(i && i.open); };
 function todayHours(det) {
   if (!det || !det.h) return null;
   const line = det.h[(new Date().getDay() + 6) % 7]; // weekdayDescriptions start Monday
@@ -81,8 +127,9 @@ function matches(p) {
   }
   if (state.top && !p.must_try) return false;
   if (state.pork && p.pork_lamb_free === false) return false;
+  if (state.openNow && !isOpenNow(p)) return false;
   if (state.q) {
-    const hay = `${p.name} ${p.name_kr} ${p.area} ${p.signature} ${p.category} ${p.cuisine || ""}`.toLowerCase();
+    const hay = `${p.name} ${p.name_kr} ${p.area} ${p.signature} ${p.blurb || ""} ${p.category} ${p.cuisine || ""}`.toLowerCase();
     if (!hay.includes(state.q.toLowerCase())) return false;
   }
   return true;
@@ -102,7 +149,15 @@ function cardHTML(p, dist) {
   if (p.pork_lamb_free === false) tags.push(`<span class="tag tag--warn">⚠ contains pork/lamb</span>`);
   if (p.photo_spot) tags.push(`<span class="tag tag--photo">📸 Photo spot</span>`);
   if (p.station && p.station !== "see map") tags.push(`<span class="tag">🚇 ${p.station}</span>`);
-  if (hrs) tags.push(`<span class="tag${/closed/i.test(hrs) ? " tag--warn" : ""}">🕑 ${hrs}</span>`);
+  const info = hoursInfo(det);
+  const canWeek = det && det.h ? ` data-act="hours"` : "";
+  if (info) {
+    const cls = info.open ? (info.soon ? "tag--soon" : "tag--open") : "tag--closed";
+    const dot = info.open ? (info.soon ? "🟡" : "🟢") : "🔴";
+    tags.push(`<button class="tag ${cls} tag--btn"${canWeek}>${dot} ${info.text}</button>`);
+  } else if (hrs) {
+    tags.push(`<button class="tag${/closed/i.test(hrs) ? " tag--warn" : ""} tag--btn"${canWeek}>🕑 ${hrs}</button>`);
+  }
   const st = (typeof Trip !== "undefined") ? Trip.status(p.id) : null;
   const ig = p.instagram ? `<a class="util" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener" title="Instagram">📷</a>` : "";
   return `
@@ -183,6 +238,17 @@ async function sharePlace(p) {
   if (navigator.share) { try { await navigator.share({ title: p.name, text, url }); } catch (e) {} }
   else { try { await navigator.clipboard.writeText(`${text}\n${url}`); toast("Link copied"); } catch { prompt("Copy:", url); } }
 }
+function showWeek(p) {
+  const det = detOf(p); if (!det || !det.h) return;
+  const pop = document.getElementById("hours-pop"); if (!pop) return;
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  document.getElementById("hours-pop-name").textContent = p.name;
+  document.getElementById("hours-pop-body").innerHTML = det.h.map((line, i) => {
+    const parts = line.split(": ");
+    return `<div class="hp-row${i === todayIdx ? " hp-today" : ""}"><span>${parts[0]}</span><span>${parts.slice(1).join(": ")}</span></div>`;
+  }).join("");
+  pop.hidden = false;
+}
 function geolocate(cb, btn, busyText) {
   if (!navigator.geolocation) { alert("Location isn't available on this device."); return; }
   const restore = btn ? btn.textContent : null;
@@ -231,6 +297,8 @@ function wireControls() {
     render();
   });
   document.getElementById("toggle-top").addEventListener("change", e => { state.top = e.target.checked; render(); });
+  const openBtn = document.getElementById("toggle-open");
+  if (openBtn) openBtn.addEventListener("click", () => { state.openNow = !state.openNow; openBtn.classList.toggle("is-on", state.openNow); render(); });
   let searchT;
   document.getElementById("search").addEventListener("input", e => { state.q = e.target.value.trim(); clearTimeout(searchT); searchT = setTimeout(render, 140); });
 
@@ -273,12 +341,21 @@ function wireControls() {
       card.querySelector(".savebtn.check").setAttribute("aria-pressed", now === "been");
       return;
     }
+    const hb = e.target.closest('[data-act="hours"]');
+    if (hb) { const p = PLACES.find(x => x.id === id); if (p) showWeek(p); return; }
     const u = e.target.closest(".util[data-act]"); if (!u) return;
     const p = PLACES.find(x => x.id === id); if (!p) return;
     if (u.dataset.act === "copy") copyKR(p);
     else if (u.dataset.act === "phrase" && window.openPhrasebook) window.openPhrasebook(PHRASE_CAT[GROUP_OF[p.category]] ?? 0);
     else if (u.dataset.act === "share") sharePlace(p);
   });
+}
+
+const hoursPop = document.getElementById("hours-pop");
+if (hoursPop) {
+  const hide = () => hoursPop.hidden = true;
+  hoursPop.addEventListener("click", e => { if (e.target === hoursPop) hide(); });
+  document.getElementById("hours-pop-close").addEventListener("click", hide);
 }
 
 buildChips();
