@@ -33,7 +33,7 @@ const EMOJI = {
 // place group -> phrasebook category index (Basics0, NoPork1, Ordering2, Transit3, Shopping4, Help5)
 const PHRASE_CAT = { matcha: 2, cafedessert: 2, restaurant: 1, shop: 4, fashion: 4, landmark: 3 };
 
-const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null };
+const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null, sortNear: false };
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
 
 function coordOf(p) {
@@ -123,13 +123,13 @@ function render() {
   const el = document.getElementById("cards");
   let items = PLACES.filter(matches).map(p => ({ p, d: null }));
   if (state.near) {
-    items = items.map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; })
-      .sort((a, b) => a.d - b.d);
+    items = items.map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; });
+    if (state.sortNear) items.sort((a, b) => a.d - b.d);
   }
   el.innerHTML = items.length
     ? items.map(x => cardHTML(x.p, x.d)).join("")
     : `<p class="empty">No spots match these filters yet.<br />Try clearing one. 🍵</p>`;
-  document.getElementById("near-note").hidden = !state.near;
+  document.getElementById("near-note").hidden = !state.sortNear;
   const cityTotal = PLACES.filter(inCity).length;
   document.getElementById("results-count").textContent = `Showing ${items.length} of ${cityTotal} hand-picked spots`;
 }
@@ -203,21 +203,32 @@ function wireControls() {
   document.getElementById("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
 
   const nearBtn = document.getElementById("toggle-near");
+  const setNearBtn = on => { nearBtn.classList.toggle("is-on", on); nearBtn.textContent = on ? "📍 Nearest first ✓" : "📍 Near me"; };
   nearBtn.addEventListener("click", () => {
-    if (state.near) { state.near = null; nearBtn.classList.remove("is-on"); nearBtn.textContent = "📍 Near me"; render(); return; }
-    geolocate(loc => { state.near = loc; nearBtn.classList.add("is-on"); nearBtn.textContent = "📍 Near me ✓"; render(); }, nearBtn);
+    if (state.sortNear) { state.sortNear = false; setNearBtn(false); render(); return; }
+    const go = () => { state.sortNear = true; setNearBtn(true); render(); };
+    if (state.near) go(); else geolocate(loc => { state.near = loc; go(); }, nearBtn);
   });
 
   const matchaBtn = document.getElementById("nearest-matcha");
   if (matchaBtn) matchaBtn.addEventListener("click", () => {
     geolocate(loc => {
-      state.near = loc; state.cats = new Set(["matcha"]); state.cuisines.clear();
+      state.near = loc; state.sortNear = true; state.cats = new Set(["matcha"]); state.cuisines.clear();
       document.querySelectorAll("#category-chips .chip").forEach(c => setPressed(c, c.dataset.cat === "matcha"));
       document.getElementById("cuisine-wrap").classList.remove("is-open");
-      nearBtn.classList.add("is-on"); nearBtn.textContent = "📍 Near me ✓";
+      setNearBtn(true);
       render(); window.scrollTo({ top: 0, behavior: "smooth" });
     }, matchaBtn, "🍵 Finding…");
   });
+
+  // if location was already allowed, grab it silently so every card shows a distance
+  if (navigator.geolocation && navigator.permissions && navigator.permissions.query) {
+    navigator.permissions.query({ name: "geolocation" }).then(r => {
+      if (r.state === "granted") navigator.geolocation.getCurrentPosition(
+        pos => { state.near = { lat: pos.coords.latitude, lng: pos.coords.longitude }; render(); },
+        () => {}, { maximumAge: 600000, timeout: 8000 });
+    }).catch(() => {});
+  }
 
   // card actions (delegated)
   document.getElementById("cards").addEventListener("click", e => {
