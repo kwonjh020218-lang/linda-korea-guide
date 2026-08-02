@@ -68,20 +68,18 @@ function draw() {
   if (pts.length) map.fitBounds(pts, { padding: [40, 40], maxZoom: 15 });
   else map.setView(CITY_CENTER[state.city], 12);
 }
+const setPressed = (btn, on) => btn.setAttribute("aria-pressed", on ? "true" : "false");
 function buildChips() {
   const el = document.getElementById("category-chips");
-  el.innerHTML = `<button class="chip active" data-cat="">All</button>` +
-    PRIMARY.map(c => `<button class="chip" data-cat="${c.key}">${c.emoji} ${c.label}</button>`).join("");
+  el.innerHTML = `<button class="chip" data-cat="" aria-pressed="true">All</button>` +
+    PRIMARY.map(c => `<button class="chip" data-cat="${c.key}" aria-pressed="false">${c.emoji} ${c.label}</button>`).join("");
   el.addEventListener("click", e => {
     const b = e.target.closest(".chip"); if (!b) return;
     const k = b.dataset.cat;
     if (k === "") state.cats.clear();
     else if (state.cats.has(k)) state.cats.delete(k);
     else state.cats.add(k);
-    el.querySelectorAll(".chip").forEach(c => {
-      const kk = c.dataset.cat;
-      c.classList.toggle("active", kk === "" ? state.cats.size === 0 : state.cats.has(kk));
-    });
+    el.querySelectorAll(".chip").forEach(c => setPressed(c, c.dataset.cat === "" ? state.cats.size === 0 : state.cats.has(c.dataset.cat)));
     draw();
   });
 }
@@ -89,7 +87,7 @@ function initTabs() {
   document.getElementById("city-tabs").addEventListener("click", e => {
     const b = e.target.closest(".tab"); if (!b) return;
     state.city = b.dataset.city;
-    document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === b));
+    document.querySelectorAll("#city-tabs .tab").forEach(t => setPressed(t, t === b));
     draw();
   });
 }

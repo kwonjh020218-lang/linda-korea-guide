@@ -2,60 +2,75 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Linda's Korea Guide 🍵</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#7c9070" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#141712" media="(prefers-color-scheme: dark)" />
+  <title>Linda's Korea Guide 🍵</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header id="app-header">
-    <h1>Linda's Korea Guide 🍵</h1>
-    <p class="subtitle">Seoul · Busan · made with love</p>
-    <a class="view-toggle" href="map.html">🗺️ Map view</a>
+<div class="app">
+  <header class="header">
+    <div class="header__row">
+      <div class="brand">
+        <h1 class="brand__title">Linda's Korea Guide 🍵</h1>
+        <p class="brand__sub">Seoul · Busan · made with love</p>
+      </div>
+      <div class="viewtoggle" role="group" aria-label="View mode">
+        <button type="button" aria-pressed="true">List</button>
+        <a href="map.html" aria-pressed="false">Map</a>
+      </div>
+    </div>
   </header>
 
-  <div class="note">
-    Hi Linda! 👋 Here are my favorite spots, picked just for you 🍵<br />
-    Save this page and use it offline. Tap <b>Open in Google Maps</b> on any card for one-tap directions.
-  </div>
+  <section class="note" aria-label="A note for Linda">
+    <p class="note__hi">Hi Linda! 🌿</p>
+    <p>Six weeks in Korea — how exciting! I hand-picked 700+ spots so you never have to guess where to go.
+      Start with the matcha 🍵. Filter by city, tap “Near me,” and follow the ⭐ gold picks when you're unsure.</p>
+    <span class="note__sign">— made with love x</span>
+  </section>
 
-  <!-- City tabs -->
-  <nav class="tabs" id="city-tabs">
-    <button class="tab active" data-city="seoul">Seoul</button>
-    <button class="tab" data-city="busan">Busan</button>
-    <!-- TODO: <button class="tab" data-city="japan">Japan</button> -->
-  </nav>
+  <section class="filters" aria-label="Filters">
+    <p class="section-label">City</p>
+    <div class="cities" id="city-tabs" role="group" aria-label="Choose a city">
+      <button type="button" class="tab" data-city="seoul" aria-pressed="true">Seoul</button>
+      <button type="button" class="tab" data-city="busan" aria-pressed="false">Busan</button>
+    </div>
 
-  <!-- Category chips -->
-  <div class="chips" id="category-chips"><!-- filled by app.js --></div>
+    <p class="section-label">Category</p>
+    <div class="chiprow" id="category-chips" role="group" aria-label="Categories"><!-- app.js --></div>
 
-  <!-- Cuisine sub-filter (shown only when Restaurant is selected) -->
-  <div class="chips sub" id="cuisine-chips" hidden><!-- filled by app.js --></div>
+    <div class="cuisine-wrap" id="cuisine-wrap">
+      <p class="section-label">Cuisine</p>
+      <div class="chiprow chiprow--cuisine" id="cuisine-chips" role="group" aria-label="Cuisine"><!-- app.js --></div>
+    </div>
 
-  <!-- Toggles -->
-  <div class="toggles">
-    <button type="button" id="toggle-near" class="near-btn">📍 Near me</button>
-    <label><input type="checkbox" id="toggle-top" /> ⭐ Top Picks only</label>
-    <label><input type="checkbox" id="toggle-pork" /> 🚫🥓 No pork/lamb only</label>
-    <input type="search" id="search" placeholder="Search name or area…" />
-  </div>
-  <div class="near-note" id="near-note" hidden>📍 Sorted by how close each spot is to you (straight-line distance).</div>
+    <div class="controls">
+      <button type="button" class="btn-outline" id="toggle-near">📍 Near me</button>
+      <label class="toggle"><input type="checkbox" id="toggle-top" /><span class="box">✓</span> ⭐ Top Picks only</label>
+      <label class="toggle"><input type="checkbox" id="toggle-pork" /><span class="box">✓</span> 🚫🥓 No pork/lamb only</label>
+    </div>
+    <div class="search">
+      <span aria-hidden="true">🔍</span>
+      <input type="search" id="search" placeholder="Search name or area…" aria-label="Search name or area" />
+    </div>
+    <p class="near-note" id="near-note" hidden>📍 Sorted by how close each spot is to you (straight-line).</p>
+  </section>
 
-  <!-- Overview map: paste a My Maps embed URL into the iframe src below to enable -->
-  <!-- TODO: generate a Google My Maps for each city, paste its embed URL here (see README) -->
-  <div class="map-wrap" id="map-wrap" hidden>
-    <iframe id="overview-map" title="Overview map" src="" loading="lazy"></iframe>
-  </div>
+  <main class="results">
+    <p class="results__count" id="results-count"></p>
+    <div class="list" id="cards"><!-- app.js --></div>
+  </main>
 
-  <main id="cards"><!-- filled by app.js --></main>
+  <footer>Packed with matcha &amp; love, just for you 🍵💚</footer>
+</div>
 
-  <footer class="foot">Made for Linda 🍵 · Enjoy Korea</footer>
-
-  <script src="data.js"></script>
-  <script src="coords.js"></script>
-  <script src="app.js"></script>
+<script src="data.js"></script>
+<script src="coords.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

@@ -1,6 +1,4 @@
-// ===== Linda's Korea Guide — render + filters =====
-
-// Primary categories (top chip row)
+// ===== Linda's Korea Guide — render + filters (v0 design) =====
 const PRIMARY = [
   { key: "matcha",      emoji: "🍵", label: "Matcha" },
   { key: "cafedessert", emoji: "🍰", label: "Cafe & Dessert" },
@@ -9,8 +7,6 @@ const PRIMARY = [
   { key: "shop",        emoji: "🛍️", label: "Shop" },
   { key: "fashion",     emoji: "👕", label: "Fashion & Vintage" },
 ];
-
-// Cuisine sub-filter (shown only when Restaurant is active)
 const CUISINES = [
   { key: "korean",   emoji: "🍲", label: "Korean" },
   { key: "japanese", emoji: "🍣", label: "Japanese" },
@@ -18,40 +14,26 @@ const CUISINES = [
   { key: "western",  emoji: "🍝", label: "Western" },
   { key: "global",   emoji: "🌍", label: "Global" },
 ];
-
-// data.category -> primary group
 const GROUP_OF = {
-  matcha: "matcha",
-  dessert: "cafedessert", cafe: "cafedessert",
-  sushi: "restaurant", japanese: "restaurant", chinese: "restaurant",
-  korean: "restaurant", italian: "restaurant", ramen: "restaurant",
-  steak: "restaurant", burger: "restaurant", brunch: "restaurant",
-  mexican: "restaurant", thai: "restaurant", vietnamese: "restaurant", indian: "restaurant",
+  matcha: "matcha", dessert: "cafedessert", cafe: "cafedessert",
+  sushi: "restaurant", japanese: "restaurant", chinese: "restaurant", korean: "restaurant",
+  italian: "restaurant", ramen: "restaurant", steak: "restaurant", burger: "restaurant",
+  brunch: "restaurant", mexican: "restaurant", thai: "restaurant", vietnamese: "restaurant", indian: "restaurant",
   landmark: "landmark", photo: "photo", shop: "shop", fashion: "fashion",
 };
-// cuisine bucket -> which data.cuisine values belong to it
 const CUISINE_MATCH = {
-  korean:   c => c === "korean",
-  japanese: c => c === "japanese",
-  chinese:  c => c === "chinese",
-  western:  c => c === "italian" || c === "western",
-  global:   c => c === "global",
+  korean: c => c === "korean", japanese: c => c === "japanese", chinese: c => c === "chinese",
+  western: c => c === "italian" || c === "western", global: c => c === "global",
 };
-
-// per-card emoji (fine-grained by data.category)
 const EMOJI = {
-  matcha: "🍵", dessert: "🍰", cafe: "☕", sushi: "🍣", japanese: "🍜",
-  chinese: "🥢", korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸",
-  shop: "🛍️", fashion: "👕", ramen: "🍜", steak: "🥩", burger: "🍔",
-  brunch: "🥐", mexican: "🌮", thai: "🥘", vietnamese: "🍜", indian: "🍛",
+  matcha: "🍵", dessert: "🍰", cafe: "☕", sushi: "🍣", japanese: "🍜", chinese: "🥢",
+  korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸", shop: "🛍️", fashion: "👕",
+  ramen: "🍜", steak: "🥩", burger: "🍔", brunch: "🥐", mexican: "🌮", thai: "🥘", vietnamese: "🍜", indian: "🍛",
 };
-
-// Paste My Maps embed URLs here to show an overview map per city (see README). "" = hidden.
-const CITY_MAP = { seoul: "", busan: "" };
 
 const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null };
+const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
 
-// best-known coordinate for a place (exact from data, else geocoded from coords.js) — for distance only
 function coordOf(p) {
   if (p.lat != null && p.lng != null) return { lat: p.lat, lng: p.lng };
   const c = (typeof COORDS !== "undefined") && COORDS[p.id];
@@ -63,10 +45,6 @@ function haversineKm(a, b) {
   const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(s));
 }
-
-// gyeongju places belong to the Busan tab
-const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
-
 function mapsUrl(p) {
   let q;
   if (p.lat != null && p.lng != null) q = `${p.lat},${p.lng}`;
@@ -76,7 +54,6 @@ function mapsUrl(p) {
   if (p.place_id) url += `&query_place_id=${p.place_id}`;
   return url;
 }
-
 function matches(p) {
   if (!inCity(p)) return false;
   const group = GROUP_OF[p.category] || p.category;
@@ -98,38 +75,31 @@ function cardHTML(p, dist) {
   const tags = [];
   if (dist != null && isFinite(dist)) {
     const label = dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km";
-    tags.push(`<span class="tag near">📍 ${label}</span>`);
+    tags.push(`<span class="tag tag--dist">📍 ${label}</span>`);
   }
-  if (p.spice > 0) {
-    const hot = p.spice === 3 ? " hot" : "";
-    tags.push(`<span class="tag spice${hot}">${"🌶️".repeat(p.spice)}${p.spice === 3 ? " very spicy!" : ""}</span>`);
-  }
-  if (p.pork_lamb_free === true)  tags.push(`<span class="tag good">No pork/lamb ✓</span>`);
-  if (p.pork_lamb_free === false) tags.push(`<span class="tag amber">⚠ contains pork/lamb</span>`);
-  if (p.photo_spot) tags.push(`<span class="tag photo">📸 Photo spot</span>`);
-  if (p.station) tags.push(`<span class="tag info">🚇 ${p.station}</span>`);
-  if (p.hours)   tags.push(`<span class="tag info">🕑 ${p.hours}</span>`);
-
+  if (p.spice > 0) tags.push(`<span class="tag${p.spice === 3 ? " tag--warn" : ""}">${"🌶️".repeat(p.spice)}${p.spice === 3 ? " very spicy!" : ""}</span>`);
+  if (p.pork_lamb_free === true)  tags.push(`<span class="tag tag--ok">No pork/lamb ✓</span>`);
+  if (p.pork_lamb_free === false) tags.push(`<span class="tag tag--warn">⚠ contains pork/lamb</span>`);
+  if (p.photo_spot) tags.push(`<span class="tag tag--photo">📸 Photo spot</span>`);
+  if (p.station && p.station !== "see map") tags.push(`<span class="tag">🚇 ${p.station}</span>`);
+  if (p.hours) tags.push(`<span class="tag">🕑 ${p.hours}</span>`);
   const ig = p.instagram
-    ? `<a class="btn secondary" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener">Instagram</a>`
-    : "";
-
+    ? `<a class="btn-ig" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener">Instagram</a>` : "";
   return `
-    <article class="card">
-      <div class="card-top">
-        <span class="emoji">${EMOJI[p.category] || "📍"}</span>
-        <h2>${p.name}</h2>
-        ${p.must_try ? `<span class="badge">⭐ Top Pick</span>` : ""}
+    <article class="card${p.must_try ? " card--top" : ""}">
+      <div class="card__head">
+        <h2 class="card__name"><span class="card__emoji" aria-hidden="true">${EMOJI[p.category] || "📍"}</span>${p.name}</h2>
+        ${p.must_try ? `<span class="badge-top">⭐ Top Pick</span>` : ""}
       </div>
       <div class="meta">
-        <span class="pill">${p.area}</span>
-        ${p.price ? `<span class="pill">${p.price}</span>` : ""}
+        <span class="metachip">${p.area}</span>
+        ${p.price ? `<span class="metachip metachip--price">${p.price}</span>` : ""}
       </div>
-      <div class="signature">${p.signature}</div>
-      <div class="blurb">${p.blurb}</div>
-      <div class="tags">${tags.join("")}</div>
+      <p class="card__sig">${p.signature}</p>
+      <p class="card__blurb">${p.blurb}</p>
+      ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
       <div class="actions">
-        <a class="btn primary" href="${mapsUrl(p)}" target="_blank" rel="noopener">Open in Google Maps</a>
+        <a class="btn-primary" href="${mapsUrl(p)}" target="_blank" rel="noopener">Open in Google Maps</a>
         ${ig}
       </div>
     </article>`;
@@ -139,65 +109,53 @@ function render() {
   const el = document.getElementById("cards");
   let items = PLACES.filter(matches).map(p => ({ p, d: null }));
   if (state.near) {
-    items = items
-      .map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; })
+    items = items.map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; })
       .sort((a, b) => a.d - b.d);
   }
   el.innerHTML = items.length
     ? items.map(x => cardHTML(x.p, x.d)).join("")
-    : `<div class="empty">No spots match these filters yet.<br />Try clearing a filter. 🍵</div>`;
-
+    : `<p class="empty">No spots match these filters yet.<br />Try clearing one. 🍵</p>`;
   document.getElementById("near-note").hidden = !state.near;
-
-  const wrap = document.getElementById("map-wrap");
-  const src = CITY_MAP[state.city];
-  if (src) { document.getElementById("overview-map").src = src; wrap.hidden = false; }
-  else { wrap.hidden = true; }
+  const cityTotal = PLACES.filter(inCity).length;
+  document.getElementById("results-count").textContent = `Showing ${items.length} of ${cityTotal} hand-picked spots`;
 }
 
-function syncChips(el, isActive) {
-  el.querySelectorAll(".chip").forEach(c => {
-    const k = c.dataset.cat;
-    c.classList.toggle("active", k === "" ? isActive(null) : isActive(k));
-  });
-}
+const setPressed = (btn, on) => btn.setAttribute("aria-pressed", on ? "true" : "false");
 
 function buildChips() {
   const el = document.getElementById("category-chips");
-  el.innerHTML = `<button class="chip active" data-cat="">All</button>` +
-    PRIMARY.map(c => `<button class="chip" data-cat="${c.key}">${c.emoji} ${c.label}</button>`).join("");
-
+  el.innerHTML = `<button class="chip" data-cat="" aria-pressed="true">All</button>` +
+    PRIMARY.map(c => `<button class="chip" data-cat="${c.key}" aria-pressed="false">${c.emoji} ${c.label}</button>`).join("");
   const sub = document.getElementById("cuisine-chips");
-  sub.innerHTML = `<span class="sub-label">Cuisine:</span>` +
-    CUISINES.map(c => `<button class="chip" data-cat="${c.key}">${c.emoji} ${c.label}</button>`).join("");
+  sub.innerHTML = CUISINES.map(c => `<button class="chip" data-cat="${c.key}" aria-pressed="false">${c.emoji} ${c.label}</button>`).join("");
+  const wrap = document.getElementById("cuisine-wrap");
 
   el.addEventListener("click", e => {
-    const btn = e.target.closest(".chip"); if (!btn) return;
-    const cat = btn.dataset.cat;
+    const b = e.target.closest(".chip"); if (!b) return;
+    const cat = b.dataset.cat;
     if (cat === "") state.cats.clear();
     else if (state.cats.has(cat)) state.cats.delete(cat);
     else state.cats.add(cat);
     if (!state.cats.has("restaurant")) state.cuisines.clear();
-    sub.hidden = !state.cats.has("restaurant");
-    syncChips(el, k => k === null ? state.cats.size === 0 : state.cats.has(k));
-    syncChips(sub, k => state.cuisines.has(k));
+    wrap.classList.toggle("is-open", state.cats.has("restaurant"));
+    el.querySelectorAll(".chip").forEach(c => setPressed(c, c.dataset.cat === "" ? state.cats.size === 0 : state.cats.has(c.dataset.cat)));
+    sub.querySelectorAll(".chip").forEach(c => setPressed(c, state.cuisines.has(c.dataset.cat)));
     render();
   });
-
   sub.addEventListener("click", e => {
-    const btn = e.target.closest(".chip"); if (!btn) return;
-    const k = btn.dataset.cat;
+    const b = e.target.closest(".chip"); if (!b) return;
+    const k = b.dataset.cat;
     if (state.cuisines.has(k)) state.cuisines.delete(k); else state.cuisines.add(k);
-    syncChips(sub, key => state.cuisines.has(key));
+    sub.querySelectorAll(".chip").forEach(c => setPressed(c, state.cuisines.has(c.dataset.cat)));
     render();
   });
 }
 
 function wireControls() {
   document.getElementById("city-tabs").addEventListener("click", e => {
-    const btn = e.target.closest(".tab"); if (!btn) return;
-    state.city = btn.dataset.city;
-    document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === btn));
+    const b = e.target.closest(".tab"); if (!b) return;
+    state.city = b.dataset.city;
+    document.querySelectorAll("#city-tabs .tab").forEach(t => setPressed(t, t === b));
     render();
   });
   document.getElementById("toggle-top").addEventListener("change", e => { state.top = e.target.checked; render(); });
@@ -206,12 +164,12 @@ function wireControls() {
 
   const nearBtn = document.getElementById("toggle-near");
   nearBtn.addEventListener("click", () => {
-    if (state.near) { state.near = null; nearBtn.classList.remove("active"); nearBtn.textContent = "📍 Near me"; render(); return; }
+    if (state.near) { state.near = null; nearBtn.classList.remove("is-on"); nearBtn.textContent = "📍 Near me"; render(); return; }
     if (!navigator.geolocation) { alert("Location isn't available on this device."); return; }
     nearBtn.textContent = "📍 Locating…";
     navigator.geolocation.getCurrentPosition(
-      pos => { state.near = { lat: pos.coords.latitude, lng: pos.coords.longitude }; nearBtn.classList.add("active"); nearBtn.textContent = "📍 Near me ✓"; render(); },
-      () => { nearBtn.textContent = "📍 Near me"; alert("Couldn't get your location — please allow location access in your browser."); },
+      pos => { state.near = { lat: pos.coords.latitude, lng: pos.coords.longitude }; nearBtn.classList.add("is-on"); nearBtn.textContent = "📍 Near me ✓"; render(); },
+      () => { nearBtn.textContent = "📍 Near me"; alert("Couldn't get your location — please allow location access."); },
       { enableHighAccuracy: true, timeout: 8000 }
     );
   });
