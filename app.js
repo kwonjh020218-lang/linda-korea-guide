@@ -33,6 +33,7 @@ const EMOJI = {
 // place group -> phrasebook category index (Basics0, NoPork1, Ordering2, Transit3, Shopping4, Help5)
 const PHRASE_CAT = { matcha: 2, cafedessert: 2, restaurant: 1, shop: 4, fashion: 4, landmark: 3 };
 
+const KOREA = new Set(["seoul", "busan", "gyeongju"]);
 const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null, sortNear: false };
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
 
@@ -113,10 +114,10 @@ function cardHTML(p, dist) {
       ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
       <div class="actions">
         <a class="btn-primary" href="${mapsUrl(p)}" target="_blank" rel="noopener">🗺️ Google Maps</a>
-        <a class="btn-2nd" href="${naverUrl(p)}" target="_blank" rel="noopener" title="Naver Map — best for Korea transit">🟢 Naver</a>
+        ${KOREA.has(p.city) ? `<a class="btn-2nd" href="${naverUrl(p)}" target="_blank" rel="noopener" title="Naver Map — best for Korea transit">🟢 Naver</a>` : ""}
       </div>
       <div class="utils">
-        <button class="util" data-act="copy" title="Copy Korean name">📋 한글</button>
+        ${KOREA.has(p.city) ? `<button class="util" data-act="copy" title="Copy Korean name">📋 한글</button>` : ""}
         <button class="util" data-act="phrase" title="Useful phrases">💬</button>
         <button class="util" data-act="share" title="Share">↗</button>
         ${ig}

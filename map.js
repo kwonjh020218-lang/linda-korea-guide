@@ -19,7 +19,7 @@ const EMOJI = {
   korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸", shop: "🛍️", fashion: "👕",
   ramen: "🍜", steak: "🥩", burger: "🍔", brunch: "🥐", mexican: "🌮", thai: "🥘", vietnamese: "🍜", indian: "🍛",
 };
-const CITY_CENTER = { seoul: [37.5563, 126.9723], busan: [35.1667, 129.0667] };
+const CITY_CENTER = { seoul: [37.5563, 126.9723], busan: [35.1667, 129.0667], tokyo: [35.6762, 139.6503] };
 const state = { city: "seoul", cats: new Set() };
 let map, cluster, userMarker, userCircle;
 
