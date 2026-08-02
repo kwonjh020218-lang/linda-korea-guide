@@ -55,18 +55,26 @@ function popupHTML(p) {
     ${p.signature ? p.signature + "<br>" : ""}
     ${ig}<a href="${mapsUrl(p)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`;
 }
+let allPts = [];
+// re-fit to the current filter/city, then render markers for the viewport
 function draw() {
-  if (cluster) map.removeLayer(cluster);
-  cluster = L.markerClusterGroup({ maxClusterRadius: 45, showCoverageOnHover: false });
-  const pts = [];
-  PLACES.filter(matches).forEach(p => {
-    const c = coordOf(p); if (!c) return;
-    cluster.addLayer(L.marker(c, { icon: pinIcon(p) }).bindPopup(popupHTML(p)));
-    pts.push(c);
-  });
-  map.addLayer(cluster);
-  if (pts.length) map.fitBounds(pts, { padding: [40, 40], maxZoom: 15 });
+  allPts = PLACES.filter(matches).map(p => ({ p, c: coordOf(p) })).filter(x => x.c);
+  if (allPts.length) map.fitBounds(allPts.map(x => x.c), { padding: [40, 40], maxZoom: 15 });
   else map.setView(CITY_CENTER[state.city], 12);
+  renderMarkers();
+}
+// only build markers currently in view (huge win vs 1000+ markers up front)
+function renderMarkers() {
+  if (cluster) map.removeLayer(cluster);
+  cluster = L.markerClusterGroup({ maxClusterRadius: 48, showCoverageOnHover: false, chunkedLoading: true });
+  const b = map.getBounds().pad(0.4);
+  let n = 0;
+  for (const { p, c } of allPts) {
+    if (!b.contains(c)) continue;
+    cluster.addLayer(L.marker(c, { icon: pinIcon(p) }).bindPopup(popupHTML(p)));
+    if (++n > 1500) break;
+  }
+  map.addLayer(cluster);
 }
 const setPressed = (btn, on) => btn.setAttribute("aria-pressed", on ? "true" : "false");
 function buildChips() {
@@ -107,6 +115,7 @@ function initLocate() {
 
 map = L.map("map", { zoomControl: true }).setView(CITY_CENTER.seoul, 12);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap" }).addTo(map);
+let moveT; map.on("moveend", () => { clearTimeout(moveT); moveT = setTimeout(renderMarkers, 120); });
 buildChips();
 initTabs();
 initLocate();
