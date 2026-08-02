@@ -22,13 +22,13 @@ function stars(id, r) {
     [1,2,3,4,5].map(n => `<button class="star${n <= r ? " on" : ""}" data-r="${n}" aria-label="${n} star">★</button>`).join("") +
     (r ? `<button class="star clear" data-r="0" aria-label="Clear">✕</button>` : "") + `</div>`;
 }
-function tripCard(id) {
+function tripCard(id, step) {
   const p = byId[id]; if (!p) return "";
   const rec = Trip.get(id) || {};
   return `
     <article class="trip-card" data-id="${id}">
       <div class="card__head">
-        <h2 class="card__name"><span class="card__emoji">${EMOJI[p.category] || "📍"}</span>${p.name}</h2>
+        <h2 class="card__name">${step ? `<span class="plan-step">${step}</span>` : `<span class="card__emoji">${EMOJI[p.category] || "📍"}</span>`}${p.name}</h2>
         <button class="savebtn remove" data-act="remove" aria-label="Remove">✕</button>
       </div>
       <div class="meta"><span class="metachip">${p.area}</span>${p.price ? `<span class="metachip metachip--price">${p.price}</span>` : ""}</div>
@@ -44,6 +44,41 @@ function section(title, ids) {
 // Plan view: group the "want to go" list by city -> neighbourhood so each area reads as a day.
 const CITY_NAME = { seoul: "Seoul", busan: "Busan", gyeongju: "Gyeongju", tokyo: "Tokyo" };
 const CITY_ORDER = ["seoul", "busan", "gyeongju", "tokyo"];
+
+function coordOf(p) {
+  if (p.lat != null && p.lng != null) return { lat: p.lat, lng: p.lng };
+  const c = (typeof COORDS !== "undefined") && COORDS[p.id];
+  return c ? { lat: c.lat, lng: c.lng } : null;
+}
+function haversineKm(a, b) {
+  const R = 6371, r = x => x * Math.PI / 180;
+  const dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+// Order stops into a sensible walking sequence — nearest-neighbour from the northern-most point.
+// ponytail: NN heuristic, not optimal TSP; fine for a handful of stops in one neighbourhood.
+function routeOrder(ids) {
+  const pts = ids.map(id => ({ id, c: coordOf(byId[id]) })).filter(x => x.c);
+  const noCoord = ids.filter(id => !coordOf(byId[id]));
+  if (pts.length < 2) return { ids, coords: null };
+  let start = 0; pts.forEach((p, i) => { if (p.c.lat > pts[start].c.lat) start = i; });
+  const used = Array(pts.length).fill(false), seq = [start]; used[start] = true;
+  while (seq.length < pts.length) {
+    const last = pts[seq[seq.length - 1]].c; let best = -1, bd = Infinity;
+    pts.forEach((p, i) => { if (!used[i]) { const d = haversineKm(last, p.c); if (d < bd) { bd = d; best = i; } } });
+    seq.push(best); used[best] = true;
+  }
+  return { ids: seq.map(i => pts[i].id).concat(noCoord), coords: seq.map(i => pts[i].c) };
+}
+function routeMapsUrl(coords) {
+  const pts = coords.slice(0, 10); // Google Maps caps waypoints ~10
+  const o = pts[0], d = pts[pts.length - 1];
+  const wp = pts.slice(1, -1).map(c => `${c.lat},${c.lng}`).join("|");
+  let u = `https://www.google.com/maps/dir/?api=1&origin=${o.lat},${o.lng}&destination=${d.lat},${d.lng}&travelmode=walking`;
+  if (wp) u += `&waypoints=${encodeURIComponent(wp)}`;
+  return u;
+}
 function planSection(ids) {
   if (!ids.length) return "";
   const g = {};
@@ -55,8 +90,10 @@ function planSection(ids) {
   cities.forEach(c => {
     if (cities.length > 1) html += `<h3 class="plan-city">${CITY_NAME[c] || c}</h3>`;
     Object.keys(g[c]).sort().forEach(a => {
-      html += `<div class="plan-area"><span class="plan-area__name">📍 ${a}</span><span class="plan-area__n">${g[c][a].length}</span></div>`;
-      html += `<div class="list">${g[c][a].map(tripCard).join("")}</div>`;
+      const r = routeOrder(g[c][a]);
+      const routeBtn = r.coords ? `<a class="route-btn" href="${routeMapsUrl(r.coords)}" target="_blank" rel="noopener" title="Walking route in order">🧭 Route</a>` : "";
+      html += `<div class="plan-area"><span class="plan-area__name">📍 ${a}</span><span class="plan-area__right">${routeBtn}<span class="plan-area__n">${g[c][a].length}</span></span></div>`;
+      html += `<div class="list">${r.ids.map((id, i) => tripCard(id, r.coords ? i + 1 : null)).join("")}</div>`;
     });
   });
   return html;
