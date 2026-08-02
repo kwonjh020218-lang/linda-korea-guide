@@ -201,7 +201,20 @@ footer { text-align: center; color: var(--ink-soft); font-family: var(--f-displa
 .course__sub { margin: 2px 0 0; font-size: var(--t-xs); color: var(--ink-soft); }
 .course__stops { list-style: none; margin: var(--s4) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
 .course__stop { display: flex; align-items: center; }
-.course__stopname { font-size: var(--t-sm); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.course__stopname { flex: 1; font-size: var(--t-sm); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stop-x { flex: none; width: 26px; height: 26px; border-radius: 50%; border: 0; background: transparent; color: var(--ink-soft); font-size: 0.8rem; }
+.stop-x:active { background: var(--paper); transform: scale(0.9); }
+.course-edit { display: flex; gap: var(--s2); margin-top: var(--s3); }
+.course-add { margin-top: var(--s3); }
+.course-add__results { display: flex; flex-direction: column; gap: 2px; margin-top: var(--s2); }
+/* shared add-a-spot results (Courses + My Trip) */
+.addspot { margin-top: var(--s3); }
+.add-results { display: flex; flex-direction: column; gap: 2px; margin-top: var(--s2); }
+.add-result { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); width: 100%; text-align: left; min-height: 40px; padding: 0 var(--s3); border: 0; border-radius: var(--r-sm); background: var(--paper); }
+.add-result:active { background: var(--matcha-tint); }
+.add-result__name { font-size: var(--t-sm); font-weight: 500; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.add-result__area { flex: none; font-size: var(--t-xs); color: var(--ink-soft); }
+.add-empty { font-size: var(--t-xs); color: var(--ink-soft); padding: var(--s2) var(--s3); margin: 0; }
 .savebtn.remove { color: var(--ink-soft); font-size: 0.9rem; }
 .trip-note { width: 100%; margin-top: var(--s3); border: 1px solid var(--line); border-radius: var(--r-md);
   background: var(--paper); color: var(--ink); padding: var(--s2) var(--s3); font-family: var(--f-body); font-size: var(--t-sm); resize: vertical; min-height: 42px; }

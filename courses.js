@@ -18,6 +18,12 @@ const KIND_WORD = { matcha: "matcha", cafe: "cafés", sweets: "sweets", food: "f
 const state = { city: "seoul" };
 const inCity = c => p => p.city === c || (c === "busan" && p.city === "gyeongju");
 
+// Per-course customisation (add/remove stops), kept locally. { "city|area": [id,...] }
+const CKEY = "linda_courses_v1";
+let CUSTOM = (() => { try { return JSON.parse(localStorage.getItem(CKEY)) || {}; } catch { return {}; } })();
+const saveCustom = () => { try { localStorage.setItem(CKEY, JSON.stringify(CUSTOM)); } catch (e) {} };
+const seedCustom = c => { if (!CUSTOM[c.key]) CUSTOM[c.key] = c.stops.map(p => p.id); };
+
 function coordOf(p) {
   if (p.lat != null && p.lng != null) return { lat: p.lat, lng: p.lng };
   const c = (typeof COORDS !== "undefined") && COORDS[p.id];
@@ -93,12 +99,16 @@ function buildCourses(city) {
         matchaSpots.forEach(m => { if (chosen.includes(m)) return; const w = haversineKm(cen, coordOf(m)) - (m.must_try ? 0.25 : 0); if (w < bw) { bw = w; best = m; } });
         if (best && haversineKm(cen, coordOf(best)) <= 2.5) { if (chosen.length >= 6) chosen = chosen.slice(0, 5); chosen.push(best); }
       }
-      courses.push(Object.assign({ area: a }, routeOrder(chosen)));
+      courses.push(Object.assign({ area: a, city, key: city + "|" + a }, routeOrder(chosen)));
     });
     return courses.sort((x, y) => y.stops.length - x.stops.length);
   };
-  const best = make(p => p.must_try);          // top picks first
-  return best.length ? best : make(() => true); // fall back to all hand-picked spots (e.g. Tokyo)
+  let list = make(p => p.must_try);          // top picks first
+  if (!list.length) list = make(() => true); // fall back to all hand-picked spots (e.g. Tokyo)
+  // apply the user's per-course edits
+  return list.map(c => CUSTOM[c.key]
+    ? Object.assign({}, c, routeOrder(CUSTOM[c.key].map(id => byId[id]).filter(Boolean)), { custom: true })
+    : c);
 }
 function vibe(stops) {
   const seen = [], order = ["matcha", "food", "cafe", "sweets", "sight", "shopping", "vintage"];
@@ -114,9 +124,10 @@ function toast(msg) {
 }
 
 function courseHTML(c, idx) {
+  const canRemove = c.stops.length > 1;
   const stops = c.stops.map((p, i) => {
     const walk = c.coords && i > 0 && i < c.coords.length ? `<li class="walkstep">↓ ${walkMin(haversineKm(c.coords[i - 1], c.coords[i]))} min walk</li>` : "";
-    return walk + `<li class="course__stop"><span class="plan-step">${i + 1}</span><span class="course__stopname">${EMOJI[p.category] || "📍"} ${p.name}</span></li>`;
+    return walk + `<li class="course__stop"><span class="plan-step">${i + 1}</span><span class="course__stopname">${EMOJI[p.category] || "📍"} ${p.name}</span>${canRemove ? `<button class="stop-x" data-id="${p.id}" aria-label="Remove ${p.name}">✕</button>` : ""}</li>`;
   }).join("");
   const tot = c.coords && c.coords.length > 1 ? routeTotal(c.coords) : null;
   const totLabel = tot ? ` · ${tot.km.toFixed(1)} km · ${tot.min} min walk` : "";
@@ -127,9 +138,17 @@ function courseHTML(c, idx) {
           <h2 class="course__title">${c.area}</h2>
           <p class="course__sub">${c.stops.length} stops · ${vibe(c.stops)}${totLabel}</p>
         </div>
-        <span class="metachip metachip--top">⭐ Best of</span>
+        <span class="metachip ${c.custom ? "metachip--price" : "metachip--top"}">${c.custom ? "✎ Yours" : "⭐ Best of"}</span>
       </div>
       <ol class="course__stops">${stops}</ol>
+      <div class="course-add" hidden>
+        <div class="search"><span aria-hidden="true">🔍</span><input class="course-add__input" placeholder="Add a spot to this course…" aria-label="Add a spot" autocomplete="off" /></div>
+        <div class="course-add__results"></div>
+      </div>
+      <div class="course-edit">
+        <button class="util" data-act="add-toggle">＋ Add stop</button>
+        ${c.custom ? `<button class="util" data-act="reset">↺ Reset</button>` : ""}
+      </div>
       <div class="actions">
         <a class="btn-primary" href="${routeMapsUrl(c.coords)}" target="_blank" rel="noopener">🧭 Walk this route</a>
         <button class="btn-2nd" data-act="save-all">♥ Save all</button>
@@ -145,7 +164,7 @@ function render() {
     body.innerHTML = `<p class="empty">No ready-made courses here yet.<br />Try another city, or build your own in ❤️ My Trip. 🍵</p>`;
     return;
   }
-  body.innerHTML = `<p class="results__count">${COURSES.length} day course${COURSES.length > 1 ? "s" : ""} — top spots, ordered to walk. Tap “Walk this route”.</p>` +
+  body.innerHTML = `<p class="results__count">${COURSES.length} day course${COURSES.length > 1 ? "s" : ""} — top spots, ordered to walk. Make it yours: ✕ remove, ＋ add.</p>` +
     `<div class="list">${COURSES.map(courseHTML).join("")}</div>`;
 }
 
@@ -155,12 +174,42 @@ document.getElementById("city-tabs").addEventListener("click", e => {
   document.querySelectorAll("#city-tabs .tab").forEach(t => t.setAttribute("aria-pressed", t === b ? "true" : "false"));
   render();
 });
+function addSearch(art, q) {
+  const c = COURSES[+art.dataset.idx]; if (!c) return;
+  const res = art.querySelector(".course-add__results");
+  if (q.length < 2) { res.innerHTML = ""; return; }
+  const inCourse = new Set(c.stops.map(p => p.id)), ql = q.toLowerCase();
+  const hits = PLACES.filter(p => inCity(c.city)(p) && !inCourse.has(p.id) &&
+    `${p.name} ${p.name_kr || ""} ${p.area || ""}`.toLowerCase().includes(ql)).slice(0, 8);
+  res.innerHTML = hits.length
+    ? hits.map(p => `<button class="add-result" data-id="${p.id}"><span class="add-result__name">${EMOJI[p.category] || "📍"} ${p.name}</span><span class="add-result__area">${p.area || ""}</span></button>`).join("")
+    : `<p class="add-empty">Not in the guide — send it to me and I'll add it. 🍵</p>`;
+}
 document.getElementById("courses-body").addEventListener("click", e => {
-  const btn = e.target.closest("[data-act=save-all]"); if (!btn) return;
-  const art = e.target.closest(".course"); const c = COURSES[+art.dataset.idx]; if (!c) return;
-  let added = 0;
-  c.stops.forEach(p => { if (typeof Trip !== "undefined" && Trip.status(p.id) !== "want") { Trip.toggle(p.id, "want"); added++; } });
-  toast(added ? `Added ${added} to ❤️ My Trip` : "Already in My Trip");
+  const art = e.target.closest(".course"); if (!art) return;
+  const c = COURSES[+art.dataset.idx]; if (!c) return;
+
+  const sx = e.target.closest(".stop-x");
+  if (sx) { seedCustom(c); CUSTOM[c.key] = CUSTOM[c.key].filter(id => id !== sx.dataset.id); saveCustom(); render(); return; }
+
+  if (e.target.closest("[data-act=add-toggle]")) {
+    const box = art.querySelector(".course-add"); box.hidden = !box.hidden;
+    if (!box.hidden) box.querySelector(".course-add__input").focus(); return;
+  }
+  const ar = e.target.closest(".add-result");
+  if (ar) { seedCustom(c); CUSTOM[c.key].push(ar.dataset.id); saveCustom(); render(); return; }
+
+  if (e.target.closest("[data-act=reset]")) { delete CUSTOM[c.key]; saveCustom(); render(); return; }
+
+  if (e.target.closest("[data-act=save-all]")) {
+    let added = 0;
+    c.stops.forEach(p => { if (typeof Trip !== "undefined" && Trip.status(p.id) !== "want") { Trip.toggle(p.id, "want"); added++; } });
+    toast(added ? `Added ${added} to ❤️ My Trip` : "Already in My Trip");
+  }
+});
+document.getElementById("courses-body").addEventListener("input", e => {
+  const inp = e.target.closest(".course-add__input"); if (!inp) return;
+  addSearch(e.target.closest(".course"), inp.value.trim());
 });
 
 render();

@@ -125,6 +125,28 @@ document.getElementById("trip-body").addEventListener("click", e => {
   const id = card.dataset.id;
   if (e.target.closest("[data-act=remove]")) { Trip.remove(id); render(); return; }
 });
+
+// Add a spot to the plan — search our curated places (no external API)
+function addResults(q) {
+  const el = document.getElementById("add-results");
+  if (q.length < 2) { el.innerHTML = ""; return; }
+  const ql = q.toLowerCase();
+  const hits = PLACES.filter(p => !Trip.status(p.id) &&
+    `${p.name} ${p.name_kr || ""} ${p.area || ""} ${CITY_NAME[p.city] || p.city}`.toLowerCase().includes(ql)).slice(0, 8);
+  el.innerHTML = hits.length
+    ? hits.map(p => `<button class="add-result" data-id="${p.id}"><span class="add-result__name">${EMOJI[p.category] || "📍"} ${p.name}</span><span class="add-result__area">${p.area || ""} · ${CITY_NAME[p.city] || p.city}</span></button>`).join("")
+    : `<p class="add-empty">Not in the guide — send it to me and I'll add it. 🍵</p>`;
+}
+const addInput = document.getElementById("add-search");
+if (addInput) {
+  addInput.addEventListener("input", e => addResults(e.target.value.trim()));
+  document.getElementById("add-results").addEventListener("click", e => {
+    const b = e.target.closest(".add-result"); if (!b) return;
+    Trip.toggle(b.dataset.id, "want");
+    addInput.value = ""; addResults(""); addInput.focus();
+    render();
+  });
+}
 document.getElementById("trip-body").addEventListener("input", e => {
   const ta = e.target.closest(".trip-note"); if (!ta) return;
   Trip.setNote(ta.dataset.id, ta.value.trim());
