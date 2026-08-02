@@ -1,4 +1,4 @@
-// My Trip — saved (want) & visited (been) with notes + star ratings, from localStorage.
+// My Trip — saved (want) & visited (been) with notes, grouped into day-by-area plans.
 const EMOJI = {
   matcha: "🍵", dessert: "🍰", cafe: "☕", sushi: "🍣", japanese: "🍜", chinese: "🥢",
   korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸", shop: "🛍️", fashion: "👕",
@@ -16,12 +16,6 @@ function mapsUrl(p) {
 }
 const esc = s => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-function stars(id, r) {
-  r = r || 0;
-  return `<div class="stars" data-id="${id}">` +
-    [1,2,3,4,5].map(n => `<button class="star${n <= r ? " on" : ""}" data-r="${n}" aria-label="${n} star">★</button>`).join("") +
-    (r ? `<button class="star clear" data-r="0" aria-label="Clear">✕</button>` : "") + `</div>`;
-}
 function tripCard(id, step) {
   const p = byId[id]; if (!p) return "";
   const rec = Trip.get(id) || {};
@@ -32,7 +26,6 @@ function tripCard(id, step) {
         <button class="savebtn remove" data-act="remove" aria-label="Remove">✕</button>
       </div>
       <div class="meta"><span class="metachip">${p.area}</span>${p.price ? `<span class="metachip metachip--price">${p.price}</span>` : ""}</div>
-      ${stars(id, rec.rating)}
       <textarea class="trip-note" data-id="${id}" rows="1" placeholder="Your note… (e.g. the matcha here is unreal)">${esc(rec.note)}</textarea>
       <div class="actions"><a class="btn-primary" href="${mapsUrl(p)}" target="_blank" rel="noopener">🗺️ Open in Maps</a></div>
     </article>`;
@@ -79,6 +72,12 @@ function routeMapsUrl(coords) {
   if (wp) u += `&waypoints=${encodeURIComponent(wp)}`;
   return u;
 }
+// straight-line km -> rough on-foot minutes (×1.3 detour, ~5 km/h)
+const walkMin = km => Math.max(1, Math.round(km * 1.3 / 5 * 60));
+function routeTotal(coords) {
+  let km = 0; for (let i = 1; i < coords.length; i++) km += haversineKm(coords[i - 1], coords[i]);
+  return { km, min: walkMin(km) };
+}
 function planSection(ids) {
   if (!ids.length) return "";
   const g = {};
@@ -92,8 +91,13 @@ function planSection(ids) {
     Object.keys(g[c]).sort().forEach(a => {
       const r = routeOrder(g[c][a]);
       const routeBtn = r.coords ? `<a class="route-btn" href="${routeMapsUrl(r.coords)}" target="_blank" rel="noopener" title="Walking route in order">🧭 Route</a>` : "";
-      html += `<div class="plan-area"><span class="plan-area__name">📍 ${a}</span><span class="plan-area__right">${routeBtn}<span class="plan-area__n">${g[c][a].length}</span></span></div>`;
-      html += `<div class="list">${r.ids.map((id, i) => tripCard(id, r.coords ? i + 1 : null)).join("")}</div>`;
+      const tot = r.coords && r.coords.length > 1 ? routeTotal(r.coords) : null;
+      const totLabel = tot ? `<span class="plan-area__tot">${tot.km.toFixed(1)} km · ${tot.min} min walk</span>` : "";
+      html += `<div class="plan-area"><span class="plan-area__name">📍 ${a}</span><span class="plan-area__right">${totLabel}${routeBtn}<span class="plan-area__n">${g[c][a].length}</span></span></div>`;
+      html += `<div class="list">${r.ids.map((id, i) => {
+        const walk = r.coords && i > 0 && i < r.coords.length ? `<div class="walkstep">↓ ${walkMin(haversineKm(r.coords[i - 1], r.coords[i]))} min walk</div>` : "";
+        return walk + tripCard(id, r.coords ? i + 1 : null);
+      }).join("")}</div>`;
     });
   });
   return html;
@@ -120,8 +124,6 @@ document.getElementById("trip-body").addEventListener("click", e => {
   const card = e.target.closest(".trip-card"); if (!card) return;
   const id = card.dataset.id;
   if (e.target.closest("[data-act=remove]")) { Trip.remove(id); render(); return; }
-  const star = e.target.closest(".star");
-  if (star) { Trip.setRating(id, +star.dataset.r); render(); }
 });
 document.getElementById("trip-body").addEventListener("input", e => {
   const ta = e.target.closest(".trip-note"); if (!ta) return;

@@ -50,6 +50,12 @@ function routeMapsUrl(coords) {
   if (wp) u += `&waypoints=${encodeURIComponent(wp)}`;
   return u;
 }
+// straight-line km -> rough on-foot minutes (×1.3 detour, ~5 km/h)
+const walkMin = km => Math.max(1, Math.round(km * 1.3 / 5 * 60));
+function routeTotal(coords) {
+  let km = 0; for (let i = 1; i < coords.length; i++) km += haversineKm(coords[i - 1], coords[i]);
+  return { km, min: walkMin(km) };
+}
 // pick up to `max`, one per kind round-robin — matcha first (Linda drinks it daily)
 const KIND_PRIORITY = ["matcha", "cafe", "sweets", "food", "sight", "shopping", "vintage"];
 function pickDiverse(places, max) {
@@ -108,14 +114,18 @@ function toast(msg) {
 }
 
 function courseHTML(c, idx) {
-  const stops = c.stops.map((p, i) =>
-    `<li class="course__stop"><span class="plan-step">${i + 1}</span><span class="course__stopname">${EMOJI[p.category] || "📍"} ${p.name}</span></li>`).join("");
+  const stops = c.stops.map((p, i) => {
+    const walk = c.coords && i > 0 && i < c.coords.length ? `<li class="walkstep">↓ ${walkMin(haversineKm(c.coords[i - 1], c.coords[i]))} min walk</li>` : "";
+    return walk + `<li class="course__stop"><span class="plan-step">${i + 1}</span><span class="course__stopname">${EMOJI[p.category] || "📍"} ${p.name}</span></li>`;
+  }).join("");
+  const tot = c.coords && c.coords.length > 1 ? routeTotal(c.coords) : null;
+  const totLabel = tot ? ` · ${tot.km.toFixed(1)} km · ${tot.min} min walk` : "";
   return `
     <article class="course" data-idx="${idx}">
       <div class="course__head">
         <div>
           <h2 class="course__title">${c.area}</h2>
-          <p class="course__sub">${c.stops.length} stops · ${vibe(c.stops)}</p>
+          <p class="course__sub">${c.stops.length} stops · ${vibe(c.stops)}${totLabel}</p>
         </div>
         <span class="metachip metachip--top">⭐ Best of</span>
       </div>

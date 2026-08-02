@@ -7,23 +7,12 @@ const PRIMARY = [
   { key: "shop",        emoji: "🛍️", label: "Shop" },
   { key: "fashion",     emoji: "👕", label: "Fashion & Vintage" },
 ];
-const CUISINES = [
-  { key: "korean",   emoji: "🍲", label: "Korean" },
-  { key: "japanese", emoji: "🍣", label: "Japanese" },
-  { key: "chinese",  emoji: "🥢", label: "Chinese" },
-  { key: "western",  emoji: "🍝", label: "Western" },
-  { key: "global",   emoji: "🌍", label: "Global" },
-];
 const GROUP_OF = {
   matcha: "matcha", dessert: "cafedessert", cafe: "cafedessert",
   sushi: "restaurant", japanese: "restaurant", chinese: "restaurant", korean: "restaurant",
   italian: "restaurant", ramen: "restaurant", steak: "restaurant", burger: "restaurant",
   brunch: "restaurant", mexican: "restaurant", thai: "restaurant", vietnamese: "restaurant", indian: "restaurant",
   landmark: "landmark", photo: "photo", shop: "shop", fashion: "fashion",
-};
-const CUISINE_MATCH = {
-  korean: c => c === "korean", japanese: c => c === "japanese", chinese: c => c === "chinese",
-  western: c => c === "italian" || c === "western", global: c => c === "global",
 };
 const EMOJI = {
   matcha: "🍵", dessert: "🍰", cafe: "☕", sushi: "🍣", japanese: "🍜", chinese: "🥢",
@@ -34,7 +23,7 @@ const EMOJI = {
 const PHRASE_CAT = { matcha: 2, cafedessert: 2, restaurant: 1, shop: 4, fashion: 4, landmark: 3 };
 
 const KOREA = new Set(["seoul", "busan", "gyeongju"]);
-const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, openNow: false, q: "", near: null, sortNear: false };
+const state = { city: "seoul", cats: new Set(), top: false, pork: false, openNow: false, q: "", near: null, sortNear: false };
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
 
 function coordOf(p) {
@@ -121,10 +110,6 @@ function matches(p) {
   if (!inCity(p)) return false;
   const group = GROUP_OF[p.category] || p.category;
   if (state.cats.size && !state.cats.has(group)) return false;
-  if (state.cuisines.size) {
-    if (group !== "restaurant") return false;
-    if (![...state.cuisines].some(k => CUISINE_MATCH[k](p.cuisine))) return false;
-  }
   if (state.top && !p.must_try) return false;
   if (state.pork && p.pork_lamb_free === false) return false;
   if (state.openNow && !isOpenNow(p)) return false;
@@ -158,7 +143,6 @@ function cardHTML(p, dist) {
     tags.push(`<span class="tag${/closed/i.test(hrs) ? " tag--warn" : ""}">🕑 ${hrs}</span>`);
   }
   const st = (typeof Trip !== "undefined") ? Trip.status(p.id) : null;
-  const ig = p.instagram ? `<a class="util" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener" title="Instagram">📷</a>` : "";
   return `
     <article class="card${p.must_try ? " card--top" : ""}${photo ? " has-photo" : ""}" data-id="${p.id}">
       ${photo ? `<img class="card__photo" loading="lazy" src="${photo}" alt="" />` : ""}
@@ -185,7 +169,6 @@ function cardHTML(p, dist) {
         ${KOREA.has(p.city) ? `<button class="util" data-act="copy" title="Copy Korean name">📋 한글</button>` : ""}
         <button class="util" data-act="phrase" title="Useful phrases">💬</button>
         <button class="util" data-act="share" title="Share">↗</button>
-        ${ig}
       </div>
     </article>`;
 }
@@ -252,9 +235,6 @@ function buildChips() {
   const el = document.getElementById("category-chips");
   el.innerHTML = `<button class="chip" data-cat="" aria-pressed="true">All</button>` +
     PRIMARY.map(c => `<button class="chip" data-cat="${c.key}" aria-pressed="false">${c.emoji} ${c.label}</button>`).join("");
-  const sub = document.getElementById("cuisine-chips");
-  sub.innerHTML = CUISINES.map(c => `<button class="chip" data-cat="${c.key}" aria-pressed="false">${c.emoji} ${c.label}</button>`).join("");
-  const wrap = document.getElementById("cuisine-wrap");
 
   el.addEventListener("click", e => {
     const b = e.target.closest(".chip"); if (!b) return;
@@ -262,17 +242,7 @@ function buildChips() {
     if (cat === "") state.cats.clear();
     else if (state.cats.has(cat)) state.cats.delete(cat);
     else state.cats.add(cat);
-    if (!state.cats.has("restaurant")) state.cuisines.clear();
-    wrap.classList.toggle("is-open", state.cats.has("restaurant"));
     el.querySelectorAll(".chip").forEach(c => setPressed(c, c.dataset.cat === "" ? state.cats.size === 0 : state.cats.has(c.dataset.cat)));
-    sub.querySelectorAll(".chip").forEach(c => setPressed(c, state.cuisines.has(c.dataset.cat)));
-    render();
-  });
-  sub.addEventListener("click", e => {
-    const b = e.target.closest(".chip"); if (!b) return;
-    const k = b.dataset.cat;
-    if (state.cuisines.has(k)) state.cuisines.delete(k); else state.cuisines.add(k);
-    sub.querySelectorAll(".chip").forEach(c => setPressed(c, state.cuisines.has(c.dataset.cat)));
     render();
   });
 }
@@ -301,9 +271,8 @@ function wireControls() {
   const matchaBtn = document.getElementById("nearest-matcha");
   if (matchaBtn) matchaBtn.addEventListener("click", () => {
     geolocate(loc => {
-      state.near = loc; state.sortNear = true; state.cats = new Set(["matcha"]); state.cuisines.clear();
+      state.near = loc; state.sortNear = true; state.cats = new Set(["matcha"]);
       document.querySelectorAll("#category-chips .chip").forEach(c => setPressed(c, c.dataset.cat === "matcha"));
-      document.getElementById("cuisine-wrap").classList.remove("is-open");
       setNearBtn(true);
       render(); window.scrollTo({ top: 0, behavior: "smooth" });
     }, matchaBtn, "🍵 Finding…");
