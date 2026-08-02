@@ -56,7 +56,12 @@ function mapsUrl(p) {
   if (p.place_id) url += `&query_place_id=${p.place_id}`;
   return url;
 }
-const naverUrl = p => `https://map.naver.com/p/search/${encodeURIComponent((p.name_kr || p.name) + " " + (p.address || p.area || ""))}`;
+const CITY_KR = { seoul: "서울", busan: "부산", gyeongju: "경주" };
+const naverUrl = p => {
+  // Naver is a Korean service — keep the query all-Korean (name_kr + Korean address, or + city). No English area.
+  const q = p.address ? `${p.name_kr || p.name} ${p.address}` : `${p.name_kr || p.name} ${CITY_KR[p.city] || ""}`;
+  return `https://map.naver.com/p/search/${encodeURIComponent(q.trim())}`;
+};
 
 function matches(p) {
   if (!inCity(p)) return false;
