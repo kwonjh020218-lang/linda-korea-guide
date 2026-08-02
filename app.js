@@ -150,13 +150,12 @@ function cardHTML(p, dist) {
   if (p.photo_spot) tags.push(`<span class="tag tag--photo">📸 Photo spot</span>`);
   if (p.station && p.station !== "see map") tags.push(`<span class="tag">🚇 ${p.station}</span>`);
   const info = hoursInfo(det);
-  const canWeek = det && det.h ? ` data-act="hours"` : "";
   if (info) {
     const cls = info.open ? (info.soon ? "tag--soon" : "tag--open") : "tag--closed";
     const dot = info.open ? (info.soon ? "🟡" : "🟢") : "🔴";
-    tags.push(`<button class="tag ${cls} tag--btn"${canWeek}>${dot} ${info.text}</button>`);
+    tags.push(`<span class="tag ${cls}" title="${hrs || ""}">${dot} ${info.text}</span>`);
   } else if (hrs) {
-    tags.push(`<button class="tag${/closed/i.test(hrs) ? " tag--warn" : ""} tag--btn"${canWeek}>🕑 ${hrs}</button>`);
+    tags.push(`<span class="tag${/closed/i.test(hrs) ? " tag--warn" : ""}">🕑 ${hrs}</span>`);
   }
   const st = (typeof Trip !== "undefined") ? Trip.status(p.id) : null;
   const ig = p.instagram ? `<a class="util" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener" title="Instagram">📷</a>` : "";
@@ -237,17 +236,6 @@ async function sharePlace(p) {
   const url = mapsUrl(p), text = `${p.name} — ${p.area}\n${p.signature}`;
   if (navigator.share) { try { await navigator.share({ title: p.name, text, url }); } catch (e) {} }
   else { try { await navigator.clipboard.writeText(`${text}\n${url}`); toast("Link copied"); } catch { prompt("Copy:", url); } }
-}
-function showWeek(p) {
-  const det = detOf(p); if (!det || !det.h) return;
-  const pop = document.getElementById("hours-pop"); if (!pop) return;
-  const todayIdx = (new Date().getDay() + 6) % 7;
-  document.getElementById("hours-pop-name").textContent = p.name;
-  document.getElementById("hours-pop-body").innerHTML = det.h.map((line, i) => {
-    const parts = line.split(": ");
-    return `<div class="hp-row${i === todayIdx ? " hp-today" : ""}"><span>${parts[0]}</span><span>${parts.slice(1).join(": ")}</span></div>`;
-  }).join("");
-  pop.hidden = false;
 }
 function geolocate(cb, btn, busyText) {
   if (!navigator.geolocation) { alert("Location isn't available on this device."); return; }
@@ -341,21 +329,12 @@ function wireControls() {
       card.querySelector(".savebtn.check").setAttribute("aria-pressed", now === "been");
       return;
     }
-    const hb = e.target.closest('[data-act="hours"]');
-    if (hb) { const p = PLACES.find(x => x.id === id); if (p) showWeek(p); return; }
     const u = e.target.closest(".util[data-act]"); if (!u) return;
     const p = PLACES.find(x => x.id === id); if (!p) return;
     if (u.dataset.act === "copy") copyKR(p);
     else if (u.dataset.act === "phrase" && window.openPhrasebook) window.openPhrasebook(PHRASE_CAT[GROUP_OF[p.category]] ?? 0);
     else if (u.dataset.act === "share") sharePlace(p);
   });
-}
-
-const hoursPop = document.getElementById("hours-pop");
-if (hoursPop) {
-  const hide = () => hoursPop.hidden = true;
-  hoursPop.addEventListener("click", e => { if (e.target === hoursPop) hide(); });
-  document.getElementById("hours-pop-close").addEventListener("click", hide);
 }
 
 buildChips();
