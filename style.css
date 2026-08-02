@@ -188,13 +188,16 @@ footer { text-align: center; color: var(--ink-soft); font-family: var(--f-displa
 }
 .sheet { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.45); display: flex; align-items: flex-end; }
 .sheet[hidden] { display: none; }
-.sheet__panel { width: 100%; max-width: 480px; margin: 0 auto; max-height: 82vh; display: flex; flex-direction: column;
-  background: var(--paper); border-radius: var(--r-lg) var(--r-lg) 0 0; padding: var(--s4) var(--s5) var(--s6); }
-.sheet__head { display: flex; align-items: center; justify-content: space-between; }
+.sheet__panel { width: 100%; max-width: 480px; margin: 0 auto; max-height: 85dvh; display: flex; flex-direction: column;
+  background: var(--paper); border-radius: var(--r-lg) var(--r-lg) 0 0; padding: var(--s3) var(--s5) 0; }
+.sheet__grab { width: 40px; height: 4px; border-radius: 999px; background: var(--line); margin: 0 auto var(--s2); flex: none; }
+.sheet__head { display: flex; align-items: center; justify-content: space-between; flex: none; }
 .sheet__head strong { font-family: var(--f-display); font-size: var(--t-lg); }
 .sheet__close { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 1rem; }
-.sheet__hint { font-size: var(--t-xs); color: var(--ink-soft); margin: var(--s1) 0 var(--s2); }
-.phrase-list { overflow-y: auto; display: flex; flex-direction: column; gap: var(--s2); padding-top: var(--s2); }
+.sheet__hint { font-size: var(--t-xs); color: var(--ink-soft); margin: var(--s1) 0 var(--s2); flex: none; }
+#phrase-cats { flex: none; }
+.phrase-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column;
+  gap: var(--s2); padding-top: var(--s2); padding-bottom: calc(var(--s6) + env(safe-area-inset-bottom, 0px)); }
 .phrase { text-align: left; display: flex; flex-direction: column; gap: 2px; padding: var(--s3) var(--s4); border: 1px solid var(--line); border-radius: var(--r-md); background: var(--card); }
 .phrase__en { font-weight: 700; font-size: var(--t-base); color: var(--ink); }
 .phrase__ko { font-size: var(--t-sm); color: var(--matcha-ink); }
