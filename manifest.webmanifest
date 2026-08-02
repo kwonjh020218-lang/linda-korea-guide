@@ -1,0 +1,14 @@
+{
+  "name": "Linda's Korea Guide",
+  "short_name": "Korea Guide",
+  "description": "700+ hand-picked spots across Seoul & Busan — matcha, food, landmarks, shops.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4efe4",
+  "theme_color": "#5f7a4f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

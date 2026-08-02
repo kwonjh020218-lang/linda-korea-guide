@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
 </head>
 <body>
 <div class="app">
@@ -26,6 +29,10 @@
       </div>
     </div>
   </header>
+
+  <div class="install-wrap">
+    <button type="button" id="install-btn" class="install-btn" hidden>⬇ Add to Home Screen</button>
+  </div>
 
   <section class="note" aria-label="A note for Linda">
     <p class="note__hi">Hi Linda 👋</p>
@@ -71,5 +78,6 @@
 <script src="data.js"></script>
 <script src="coords.js"></script>
 <script src="app.js"></script>
+<script src="pwa.js"></script>
 </body>
 </html>

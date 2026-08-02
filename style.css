@@ -67,6 +67,17 @@ a { color: inherit; }
 }
 .viewtoggle [aria-pressed="true"] { background: var(--matcha); color: var(--card); }
 
+/* install button */
+.install-wrap { text-align: center; margin-top: var(--s4); }
+.install-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 38px; padding: 0 var(--s4);
+  border-radius: var(--r-pill); border: 1px solid var(--matcha);
+  background: var(--matcha-tint); color: var(--matcha-ink);
+  font-weight: 600; font-size: var(--t-sm);
+}
+.install-btn[hidden] { display: none; }
+
 /* intro note */
 .note { margin: var(--s5) var(--s5) 0; background: var(--card); border: 1px solid var(--line);
   border-left: 4px solid var(--pink); border-radius: var(--r-md); padding: var(--s4) var(--s5); box-shadow: var(--shadow); }
