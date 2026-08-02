@@ -124,19 +124,33 @@ function cardHTML(p, dist) {
     </article>`;
 }
 
+const PAGE = 40;
+let filtered = [], shown = 0, io = null;
 function render() {
-  const el = document.getElementById("cards");
-  let items = PLACES.filter(matches).map(p => ({ p, d: null }));
+  filtered = PLACES.filter(matches).map(p => ({ p, d: null }));
   if (state.near) {
-    items = items.map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; });
-    if (state.sortNear) items.sort((a, b) => a.d - b.d);
+    filtered = filtered.map(x => { const c = coordOf(x.p); return { p: x.p, d: c ? haversineKm(state.near, c) : Infinity }; });
+    if (state.sortNear) filtered.sort((a, b) => a.d - b.d);
   }
-  el.innerHTML = items.length
-    ? items.map(x => cardHTML(x.p, x.d)).join("")
-    : `<p class="empty">No spots match these filters yet.<br />Try clearing one. 🍵</p>`;
   document.getElementById("near-note").hidden = !state.sortNear;
   const cityTotal = PLACES.filter(inCity).length;
-  document.getElementById("results-count").textContent = `Showing ${items.length} of ${cityTotal} hand-picked spots`;
+  document.getElementById("results-count").textContent = `Showing ${filtered.length} of ${cityTotal} hand-picked spots`;
+  const el = document.getElementById("cards");
+  shown = 0; el.innerHTML = "";
+  if (!filtered.length) { el.innerHTML = `<p class="empty">No spots match these filters yet.<br />Try clearing one. 🍵</p>`; if (io) io.disconnect(); return; }
+  appendMore();
+}
+function appendMore() {
+  const el = document.getElementById("cards");
+  const old = document.getElementById("sentinel"); if (old) old.remove();
+  const next = filtered.slice(shown, shown + PAGE);
+  el.insertAdjacentHTML("beforeend", next.map(x => cardHTML(x.p, x.d)).join(""));
+  shown += next.length;
+  if (shown < filtered.length) {
+    const sent = document.createElement("div"); sent.id = "sentinel"; sent.style.height = "1px"; el.appendChild(sent);
+    if (!io) io = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) appendMore(); }, { rootMargin: "800px" });
+    io.observe(sent);
+  } else if (io) io.disconnect();
 }
 
 const setPressed = (btn, on) => btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -205,7 +219,8 @@ function wireControls() {
     render();
   });
   document.getElementById("toggle-top").addEventListener("change", e => { state.top = e.target.checked; render(); });
-  document.getElementById("search").addEventListener("input", e => { state.q = e.target.value.trim(); render(); });
+  let searchT;
+  document.getElementById("search").addEventListener("input", e => { state.q = e.target.value.trim(); clearTimeout(searchT); searchT = setTimeout(render, 140); });
 
   const nearBtn = document.getElementById("toggle-near");
   const setNearBtn = on => { nearBtn.classList.toggle("is-on", on); nearBtn.textContent = on ? "📍 Nearest first ✓" : "📍 Near me"; };

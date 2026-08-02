@@ -68,7 +68,8 @@ a { color: inherit; }
 .viewtoggle [aria-pressed="true"] { background: var(--matcha); color: var(--card); }
 
 /* install button */
-.install-wrap { text-align: center; margin-top: var(--s4); }
+.install-wrap { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: var(--s4); }
+.install-wrap[hidden] { display: none; }
 .install-btn {
   display: inline-flex; align-items: center; gap: 6px;
   min-height: 38px; padding: 0 var(--s4);
@@ -76,7 +77,7 @@ a { color: inherit; }
   background: var(--matcha-tint); color: var(--matcha-ink);
   font-weight: 600; font-size: var(--t-sm);
 }
-.install-btn[hidden] { display: none; }
+.install-dismiss { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); font-size: 0.8rem; }
 
 /* intro note */
 .note { margin: var(--s5) var(--s5) 0; background: var(--card); border: 1px solid var(--line);
@@ -119,7 +120,8 @@ a { color: inherit; }
 .results { padding: 0 var(--s5); }
 .results__count { font-family: var(--f-display); font-style: italic; color: var(--ink-soft); font-size: var(--t-sm); margin: var(--s6) 0 var(--s3); }
 .list { display: flex; flex-direction: column; gap: var(--s4); }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s5); box-shadow: var(--shadow); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s5); box-shadow: var(--shadow);
+  content-visibility: auto; contain-intrinsic-size: 0 260px; }
 .card--top { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); }
 .card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s3); }
 .card__name { font-family: var(--f-display); font-weight: 600; font-size: var(--t-lg); line-height: 1.15; margin: 0; letter-spacing: -0.01em; }
