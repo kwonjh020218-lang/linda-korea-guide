@@ -39,6 +39,7 @@
   document.getElementById("pb-ja-btn").addEventListener("click", () => current && speak(current.ja, "ja-JP"));
 
   fab.addEventListener("click", open);
+  window.openPhrasebook = (i) => { active = Math.max(0, Math.min(PHRASES.length - 1, i | 0)); built = true; renderCats(); renderList(); sheet.hidden = false; };
   document.getElementById("phrase-close").addEventListener("click", close);
   sheet.addEventListener("click", e => { if (e.target === sheet) close(); });
   cats.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; active = +b.dataset.i; renderCats(); renderList(); });

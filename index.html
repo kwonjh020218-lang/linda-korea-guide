@@ -26,6 +26,7 @@
       <div class="viewtoggle" role="group" aria-label="View mode">
         <button type="button" aria-pressed="true">List</button>
         <a href="map.html" aria-pressed="false">Map</a>
+        <a href="mytrip.html" aria-pressed="false" aria-label="My Trip">❤️</a>
       </div>
     </div>
   </header>
@@ -57,6 +58,7 @@
 
     <div class="controls">
       <button type="button" class="btn-outline" id="toggle-near">📍 Near me</button>
+      <button type="button" class="btn-outline" id="nearest-matcha">🍵 Nearest matcha</button>
       <label class="toggle"><input type="checkbox" id="toggle-top" /><span class="box">✓</span> ⭐ Top Picks only</label>
       <label class="toggle"><input type="checkbox" id="toggle-pork" /><span class="box">✓</span> 🚫🥓 No pork/lamb only</label>
     </div>
@@ -98,8 +100,11 @@
   </div>
 </div>
 
+<div id="toast" class="toast" hidden></div>
+
 <script src="data.js"></script>
 <script src="coords.js"></script>
+<script src="store.js"></script>
 <script src="app.js"></script>
 <script src="phrases.js"></script>
 <script src="phrasebook.js"></script>

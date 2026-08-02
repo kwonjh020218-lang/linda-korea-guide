@@ -1,4 +1,4 @@
-// ===== Linda's Korea Guide — render + filters (v0 design) =====
+// ===== Linda's Korea Guide — render + filters + save/share (v0 design) =====
 const PRIMARY = [
   { key: "matcha",      emoji: "🍵", label: "Matcha" },
   { key: "cafedessert", emoji: "🍰", label: "Cafe & Dessert" },
@@ -30,6 +30,8 @@ const EMOJI = {
   korean: "🍲", italian: "🍝", landmark: "🏛️", photo: "📸", shop: "🛍️", fashion: "👕",
   ramen: "🍜", steak: "🥩", burger: "🍔", brunch: "🥐", mexican: "🌮", thai: "🥘", vietnamese: "🍜", indian: "🍛",
 };
+// place group -> phrasebook category index (Basics0, NoPork1, Ordering2, Transit3, Shopping4, Help5)
+const PHRASE_CAT = { matcha: 2, cafedessert: 2, restaurant: 1, shop: 4, fashion: 4, landmark: 3 };
 
 const state = { city: "seoul", cats: new Set(), cuisines: new Set(), top: false, pork: false, q: "", near: null };
 const inCity = p => p.city === state.city || (state.city === "busan" && p.city === "gyeongju");
@@ -54,6 +56,8 @@ function mapsUrl(p) {
   if (p.place_id) url += `&query_place_id=${p.place_id}`;
   return url;
 }
+const naverUrl = p => `https://map.naver.com/p/search/${encodeURIComponent((p.name_kr || p.name) + " " + (p.address || p.area || ""))}`;
+
 function matches(p) {
   if (!inCity(p)) return false;
   const group = GROUP_OF[p.category] || p.category;
@@ -83,15 +87,19 @@ function cardHTML(p, dist) {
   if (p.photo_spot) tags.push(`<span class="tag tag--photo">📸 Photo spot</span>`);
   if (p.station && p.station !== "see map") tags.push(`<span class="tag">🚇 ${p.station}</span>`);
   if (p.hours) tags.push(`<span class="tag">🕑 ${p.hours}</span>`);
-  const ig = p.instagram
-    ? `<a class="btn-ig" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener">Instagram</a>` : "";
+  const st = (typeof Trip !== "undefined") ? Trip.status(p.id) : null;
+  const ig = p.instagram ? `<a class="util" href="https://instagram.com/${p.instagram}" target="_blank" rel="noopener" title="Instagram">📷</a>` : "";
   return `
-    <article class="card${p.must_try ? " card--top" : ""}">
+    <article class="card${p.must_try ? " card--top" : ""}" data-id="${p.id}">
       <div class="card__head">
         <h2 class="card__name"><span class="card__emoji" aria-hidden="true">${EMOJI[p.category] || "📍"}</span>${p.name}</h2>
-        ${p.must_try ? `<span class="badge-top">⭐ Top Pick</span>` : ""}
+        <div class="savebtns">
+          <button class="savebtn heart" data-act="want" aria-pressed="${st === "want"}" aria-label="Want to go">♥</button>
+          <button class="savebtn check" data-act="been" aria-pressed="${st === "been"}" aria-label="Been here">✓</button>
+        </div>
       </div>
       <div class="meta">
+        ${p.must_try ? `<span class="metachip metachip--top">⭐ Top Pick</span>` : ""}
         <span class="metachip">${p.area}</span>
         ${p.price ? `<span class="metachip metachip--price">${p.price}</span>` : ""}
       </div>
@@ -99,7 +107,13 @@ function cardHTML(p, dist) {
       <p class="card__blurb">${p.blurb}</p>
       ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
       <div class="actions">
-        <a class="btn-primary" href="${mapsUrl(p)}" target="_blank" rel="noopener">Open in Google Maps</a>
+        <a class="btn-primary" href="${mapsUrl(p)}" target="_blank" rel="noopener">🗺️ Google Maps</a>
+        <a class="btn-2nd" href="${naverUrl(p)}" target="_blank" rel="noopener" title="Naver Map — best for Korea transit">🟢 Naver</a>
+      </div>
+      <div class="utils">
+        <button class="util" data-act="copy" title="Copy Korean name">📋 한글</button>
+        <button class="util" data-act="phrase" title="Useful phrases">💬</button>
+        <button class="util" data-act="share" title="Share">↗</button>
         ${ig}
       </div>
     </article>`;
@@ -121,6 +135,33 @@ function render() {
 }
 
 const setPressed = (btn, on) => btn.setAttribute("aria-pressed", on ? "true" : "false");
+
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById("toast"); if (!t) return;
+  t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 2200);
+}
+function copyKR(p) {
+  const txt = [p.name_kr, p.address].filter(Boolean).join("\n");
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast("Copied Korean — show it to the driver/staff 🚕"), () => prompt("Copy:", txt));
+  else prompt("Copy:", txt);
+}
+async function sharePlace(p) {
+  const url = mapsUrl(p), text = `${p.name} — ${p.area}\n${p.signature}`;
+  if (navigator.share) { try { await navigator.share({ title: p.name, text, url }); } catch (e) {} }
+  else { try { await navigator.clipboard.writeText(`${text}\n${url}`); toast("Link copied"); } catch { prompt("Copy:", url); } }
+}
+function geolocate(cb, btn, busyText) {
+  if (!navigator.geolocation) { alert("Location isn't available on this device."); return; }
+  const restore = btn ? btn.textContent : null;
+  if (btn) btn.textContent = busyText || "📍 Locating…";
+  navigator.geolocation.getCurrentPosition(
+    pos => { if (btn) btn.textContent = restore; cb({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
+    () => { if (btn) btn.textContent = restore; alert("Couldn't get your location — please allow location access."); },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+}
 
 function buildChips() {
   const el = document.getElementById("category-chips");
@@ -165,13 +206,36 @@ function wireControls() {
   const nearBtn = document.getElementById("toggle-near");
   nearBtn.addEventListener("click", () => {
     if (state.near) { state.near = null; nearBtn.classList.remove("is-on"); nearBtn.textContent = "📍 Near me"; render(); return; }
-    if (!navigator.geolocation) { alert("Location isn't available on this device."); return; }
-    nearBtn.textContent = "📍 Locating…";
-    navigator.geolocation.getCurrentPosition(
-      pos => { state.near = { lat: pos.coords.latitude, lng: pos.coords.longitude }; nearBtn.classList.add("is-on"); nearBtn.textContent = "📍 Near me ✓"; render(); },
-      () => { nearBtn.textContent = "📍 Near me"; alert("Couldn't get your location — please allow location access."); },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
+    geolocate(loc => { state.near = loc; nearBtn.classList.add("is-on"); nearBtn.textContent = "📍 Near me ✓"; render(); }, nearBtn);
+  });
+
+  const matchaBtn = document.getElementById("nearest-matcha");
+  if (matchaBtn) matchaBtn.addEventListener("click", () => {
+    geolocate(loc => {
+      state.near = loc; state.cats = new Set(["matcha"]); state.cuisines.clear();
+      document.querySelectorAll("#category-chips .chip").forEach(c => setPressed(c, c.dataset.cat === "matcha"));
+      document.getElementById("cuisine-wrap").classList.remove("is-open");
+      nearBtn.classList.add("is-on"); nearBtn.textContent = "📍 Near me ✓";
+      render(); window.scrollTo({ top: 0, behavior: "smooth" });
+    }, matchaBtn, "🍵 Finding…");
+  });
+
+  // card actions (delegated)
+  document.getElementById("cards").addEventListener("click", e => {
+    const card = e.target.closest(".card"); if (!card) return;
+    const id = card.dataset.id;
+    const sb = e.target.closest(".savebtn");
+    if (sb) {
+      const now = Trip.toggle(id, sb.dataset.act);
+      card.querySelector(".savebtn.heart").setAttribute("aria-pressed", now === "want");
+      card.querySelector(".savebtn.check").setAttribute("aria-pressed", now === "been");
+      return;
+    }
+    const u = e.target.closest(".util[data-act]"); if (!u) return;
+    const p = PLACES.find(x => x.id === id); if (!p) return;
+    if (u.dataset.act === "copy") copyKR(p);
+    else if (u.dataset.act === "phrase" && window.openPhrasebook) window.openPhrasebook(PHRASE_CAT[GROUP_OF[p.category]] ?? 0);
+    else if (u.dataset.act === "share") sharePlace(p);
   });
 }
 
