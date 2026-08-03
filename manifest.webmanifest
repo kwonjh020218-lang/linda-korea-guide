@@ -1,6 +1,6 @@
 {
-  "name": "Linda's Korea Guide",
-  "short_name": "Korea Guide",
+  "name": "Matcha Guide",
+  "short_name": "Matcha Guide",
   "description": "1,000+ hand-picked spots across Seoul, Busan & Tokyo — matcha, food, landmarks, shops.",
   "start_url": "./index.html",
   "scope": "./",
