@@ -1,5 +1,5 @@
 // Simple offline cache for the app shell + data (list page works offline).
-const CACHE = "linda-korea-v5";
+const CACHE = "linda-korea-v6";
 const ASSETS = [
   "./", "index.html", "style.css", "app.js", "data.js", "coords.js", "details.js",
   "store.js", "phrases.js", "phrasebook.js", "pwa.js",

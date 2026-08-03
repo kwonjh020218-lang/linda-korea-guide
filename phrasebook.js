@@ -6,6 +6,8 @@
   const list = document.getElementById("phrase-list");
   const big = document.getElementById("phrase-big");
   if (!fab || typeof PHRASES === "undefined") return;
+  // tag each phrase with its pre-generated audio path (ElevenLabs, baked into /audio/phrases)
+  PHRASES.forEach((c, ci) => c.items.forEach((it, ii) => { it._a = `audio/phrases/${ci}-${ii}`; }));
   let active = 0, built = false;
 
   const renderCats = () => {
@@ -21,11 +23,18 @@
   };
   const open = () => { if (!built) { renderCats(); renderList(); built = true; } sheet.hidden = false; };
   const close = () => { sheet.hidden = true; };
-  const speak = (text, lang) => {
+  // play the pre-generated ElevenLabs clip; fall back to the device voice if it's missing
+  const webSpeak = (text, lang) => {
     if (!("speechSynthesis" in window)) { alert("Voice isn't available on this device."); return; }
     const u = new SpeechSynthesisUtterance(text.replace(/\s*\/\s*/g, ", "));
     u.lang = lang; u.rate = 0.9;
     speechSynthesis.cancel(); speechSynthesis.speak(u);
+  };
+  const speak = (src, text, lang) => {
+    let fell = false; const fb = () => { if (fell) return; fell = true; webSpeak(text, lang); };
+    const a = new Audio(src);
+    a.addEventListener("error", fb, { once: true });
+    a.play().catch(fb);
   };
   let current = null;
   const showBig = p => {
@@ -35,8 +44,8 @@
     document.getElementById("pb-ja").textContent = p.ja;
     big.hidden = false;
   };
-  document.getElementById("pb-ko-btn").addEventListener("click", () => current && speak(current.ko, "ko-KR"));
-  document.getElementById("pb-ja-btn").addEventListener("click", () => current && speak(current.ja, "ja-JP"));
+  document.getElementById("pb-ko-btn").addEventListener("click", () => current && speak(current._a + "-ko.mp3", current.ko, "ko-KR"));
+  document.getElementById("pb-ja-btn").addEventListener("click", () => current && speak(current._a + "-ja.mp3", current.ja, "ja-JP"));
 
   fab.addEventListener("click", open);
   window.openPhrasebook = (i) => { active = Math.max(0, Math.min(PHRASES.length - 1, i | 0)); built = true; renderCats(); renderList(); sheet.hidden = false; };
