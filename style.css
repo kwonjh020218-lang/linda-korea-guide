@@ -148,6 +148,9 @@ a { color: inherit; }
 .tag--ok   { background: var(--matcha-tint); color: var(--matcha-ink); border-color: transparent; }
 .tag--warn { background: var(--amber-tint); color: var(--amber-ink); border-color: transparent; }
 .tag--photo{ background: var(--pink-tint); color: var(--pink-ink); border-color: transparent; }
+.tag--tip   { background: var(--gold-tint); color: var(--gold-ink); border-color: transparent; }
+.tokyo-tip { margin: var(--s4) 0 0; padding: var(--s3) var(--s4); border-radius: var(--r-md); background: var(--gold-tint); color: var(--gold-ink); font-size: var(--t-sm); font-weight: 600; line-height: 1.5; }
+.tokyo-tip[hidden] { display: none; }
 .tag--open  { background: var(--matcha-tint); color: var(--matcha-ink); border-color: transparent; }
 .tag--soon  { background: var(--amber-tint); color: var(--amber-ink); border-color: transparent; }
 .tag--closed{ background: var(--paper); color: var(--ink-soft); border-color: var(--line); }

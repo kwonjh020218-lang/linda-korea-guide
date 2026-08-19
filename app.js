@@ -125,6 +125,7 @@ function cardHTML(p, dist) {
   const photo = det && det.ph;
   const hrs = todayHours(det) || p.hours;
   const tags = [];
+  if (p.tip) tags.push(`<span class="tag tag--tip">💡 ${p.tip}</span>`);
   if (dist != null && isFinite(dist)) {
     const label = dist < 1 ? Math.round(dist * 1000) + " m" : dist.toFixed(1) + " km";
     tags.push(`<span class="tag tag--dist">📍 ${label}</span>`);
@@ -182,6 +183,8 @@ function render() {
     if (state.sortNear) filtered.sort((a, b) => a.d - b.d);
   }
   document.getElementById("near-note").hidden = !state.sortNear;
+  const tokyoTip = document.getElementById("tokyo-tip");
+  if (tokyoTip) tokyoTip.hidden = !(state.city === "tokyo" && state.cats.has("matcha"));
   const cityTotal = PLACES.filter(inCity).length;
   document.getElementById("results-count").textContent = `Showing ${filtered.length} of ${cityTotal} hand-picked spots`;
   const el = document.getElementById("cards");
